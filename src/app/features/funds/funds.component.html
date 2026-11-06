@@ -1,0 +1,83 @@
+<div class="page">
+  <app-page-header title="Contributions" subtitle="Monthly maintenance payments from residents">
+    <button mat-flat-button (click)="open()"><mat-icon>add</mat-icon> Record payment</button>
+  </app-page-header>
+
+  <div class="card">
+    <div class="toolbar-row">
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label>Search</mat-label>
+        <input matInput #q (input)="filter(q.value)" placeholder="Resident, house or paid to" />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic" style="width:150px">
+        <mat-label>Year</mat-label>
+        <mat-select [value]="year()" (valueChange)="year.set($event); apply()">
+          <mat-option value="all">All years</mat-option>
+          @for (y of years(); track y) { <mat-option [value]="y">{{ y }}</mat-option> }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic" style="width:170px">
+        <mat-label>Month</mat-label>
+        <mat-select [value]="month()" (valueChange)="month.set($event); apply()">
+          <mat-option value="all">All months</mat-option>
+          @for (m of months; track m; let i = $index) { <mat-option [value]="i + 1">{{ m }}</mat-option> }
+        </mat-select>
+      </mat-form-field>
+      <span class="spacer"></span>
+      <div class="totals">
+        <span class="muted">Collected</span> <strong class="mono">{{ totalPaid() | pkr }}</strong>
+        @if (totalDue()) { <span class="chip due">{{ totalDue() | pkr }} outstanding</span> }
+      </div>
+    </div>
+    @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+
+    @if (!loading() && all().length === 0) {
+      <app-empty-state icon="payments" title="No payments recorded" message="Record the first contribution to start the ledger.">
+        <button mat-stroked-button (click)="open()">Record payment</button>
+      </app-empty-state>
+    } @else {
+      <div class="table-scroll">
+        <table mat-table [dataSource]="data" matSort matSortActive="period" matSortDirection="desc" class="data-table">
+          <ng-container matColumnDef="residentName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Resident</th>
+            <td mat-cell *matCellDef="let r"><strong>{{ r.residentName }}</strong> <span class="muted">· H-{{ r.houseNumber }}</span></td>
+          </ng-container>
+          <ng-container matColumnDef="period">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Period</th>
+            <td mat-cell *matCellDef="let r">{{ r.month | monthName: true }} {{ r.year }} <span class="muted">· day {{ r.datePaid }}</span></td>
+          </ng-container>
+          <ng-container matColumnDef="paidTo">
+            <th mat-header-cell *matHeaderCellDef>Paid to</th>
+            <td mat-cell *matCellDef="let r">{{ r.paidTo }}</td>
+          </ng-container>
+          <ng-container matColumnDef="amount">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="num">Due</th>
+            <td mat-cell *matCellDef="let r" class="num">{{ r.amount | pkr }}</td>
+          </ng-container>
+          <ng-container matColumnDef="paidAmount">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="num">Paid</th>
+            <td mat-cell *matCellDef="let r" class="num">{{ r.paidAmount | pkr }}</td>
+          </ng-container>
+          <ng-container matColumnDef="outstanding">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="num">Status</th>
+            <td mat-cell *matCellDef="let r" class="num">
+              @if (r.outstanding > 0) { <span class="chip due">{{ r.outstanding | pkr }} due</span> } @else { <span class="chip ok">Paid</span> }
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="actions-col"></th>
+            <td mat-cell *matCellDef="let r" class="actions-col">
+              <button mat-icon-button (click)="open(r)" matTooltip="Edit" aria-label="Edit"><mat-icon>edit</mat-icon></button>
+              <button mat-icon-button (click)="remove(r)" matTooltip="Delete" aria-label="Delete"><mat-icon>delete</mat-icon></button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="columns"></tr>
+          <tr mat-row *matRowDef="let row; columns: columns"></tr>
+          <tr class="mat-row" *matNoDataRow><td class="mat-cell muted" [attr.colspan]="columns.length" style="padding:24px;text-align:center">No payments match these filters.</td></tr>
+        </table>
+      </div>
+      <mat-paginator [pageSizeOptions]="[10, 25, 50]" pageSize="10" showFirstLastButtons />
+    }
+  </div>
+</div>

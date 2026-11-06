@@ -1,0 +1,54 @@
+.shell { height: 100vh; background: var(--mat-sys-surface); }
+
+.sidenav {
+  width: 256px; border-right: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface-container-low);
+  display: flex; flex-direction: column;
+}
+
+.brand {
+  display: flex; align-items: center; gap: 12px; padding: 20px 20px 12px; text-decoration: none; color: inherit;
+  .logo {
+    display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px;
+    background: var(--mat-sys-primary); color: var(--mat-sys-on-primary);
+  }
+  .brand-text { display: grid; line-height: 1.15; }
+  strong { font: var(--mat-sys-title-medium); font-weight: 700; }
+  small { font: var(--mat-sys-label-small); color: var(--mat-sys-on-surface-variant); }
+}
+
+.nav {
+  padding: 8px 12px;
+  a[mat-list-item] { border-radius: 10px; margin-bottom: 2px; }
+  .active {
+    background: var(--mat-sys-secondary-container);
+    --mat-list-list-item-leading-icon-color: var(--mat-sys-on-secondary-container);
+    --mat-list-list-item-label-text-color: var(--mat-sys-on-secondary-container);
+    --mat-list-list-item-label-text-weight: 600;
+  }
+}
+
+.sidenav-footer {
+  margin-top: auto; padding: 16px 20px;
+  a { display: inline-flex; align-items: center; gap: 6px; font: var(--mat-sys-label-medium); text-decoration: none; }
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+.topbar {
+  position: sticky; top: 0; z-index: 10;
+  background: color-mix(in srgb, var(--mat-sys-surface) 85%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  .spacer { flex: 1; }
+}
+
+.user-btn { display: inline-flex; align-items: center; gap: 8px; padding-inline: 8px 4px; }
+.avatar {
+  display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%;
+  background: var(--mat-sys-primary-container); color: var(--mat-sys-on-primary-container);
+  font: var(--mat-sys-label-medium); font-weight: 600;
+}
+.user-name { max-width: 160px; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 600px) { .user-name { display: none; } }
+
+.content { min-height: calc(100vh - 64px); }

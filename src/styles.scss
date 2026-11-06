@@ -1,0 +1,102 @@
+@use '@angular/material' as mat;
+
+// ---------------------------------------------------------------------------
+// Theme: Material 3, system tokens, light + dark via color-scheme
+// ---------------------------------------------------------------------------
+html {
+  color-scheme: light;
+  &.dark { color-scheme: dark; }
+
+  @include mat.theme((
+    color: (
+      primary: mat.$azure-palette,
+      tertiary: mat.$cyan-palette,
+      theme-type: color-scheme,
+    ),
+    typography: (
+      plain-family: 'Inter, system-ui, sans-serif',
+      brand-family: 'Inter, system-ui, sans-serif',
+    ),
+    density: 0,
+  ));
+}
+
+// ---------------------------------------------------------------------------
+// Base
+// ---------------------------------------------------------------------------
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body { height: 100%; margin: 0; }
+
+body {
+  font: var(--mat-sys-body-medium);
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+a { color: var(--mat-sys-primary); }
+
+// ---------------------------------------------------------------------------
+// Shared layout primitives
+// ---------------------------------------------------------------------------
+.page { max-width: 1200px; margin: 0 auto; padding: 28px 24px 48px; }
+@media (max-width: 600px) { .page { padding: 20px 16px 40px; } }
+
+.card {
+  background: var(--mat-sys-surface-container-lowest);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 16px;
+  overflow: hidden;
+}
+html.dark .card { background: var(--mat-sys-surface-container-low); }
+
+.card-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  padding: 16px 20px; border-bottom: 1px solid var(--mat-sys-outline-variant);
+  h2 { margin: 0; font: var(--mat-sys-title-medium); }
+}
+
+.toolbar-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding: 12px 16px; }
+.toolbar-row .spacer { flex: 1; }
+.toolbar-row mat-form-field { width: 280px; max-width: 100%; }
+
+// Data tables
+.data-table {
+  width: 100%;
+  th.mat-mdc-header-cell { font: var(--mat-sys-label-large); color: var(--mat-sys-on-surface-variant); white-space: nowrap; }
+  td.mat-mdc-cell { font-variant-numeric: tabular-nums; }
+  .num { text-align: right; }
+  .actions-col { width: 96px; text-align: right; white-space: nowrap; }
+  tr.mat-mdc-row:hover { background: var(--mat-sys-surface-container); }
+}
+.table-scroll { overflow-x: auto; }
+
+.muted { color: var(--mat-sys-on-surface-variant); }
+.mono { font-variant-numeric: tabular-nums; }
+
+// Status chips
+.chip {
+  display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 999px;
+  font: var(--mat-sys-label-medium);
+  &.ok { background: color-mix(in srgb, #2e7d32 16%, transparent); color: #1b5e20; }
+  &.due { background: var(--mat-sys-error-container); color: var(--mat-sys-on-error-container); }
+}
+html.dark .chip.ok { color: #a5d6a7; }
+
+// Snackbar tones
+.snack-success { --mdc-snackbar-container-color: #2e7d32; --mdc-snackbar-supporting-text-color: #fff; }
+.snack-error   { --mdc-snackbar-container-color: var(--mat-sys-error); --mdc-snackbar-supporting-text-color: var(--mat-sys-on-error); --mat-snack-bar-button-color: var(--mat-sys-on-error); }
+
+// Dialog forms
+.dialog-form { display: grid; gap: 4px; min-width: min(480px, 90vw); padding-top: 8px; }
+.dialog-form .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 600px) { .dialog-form .row { grid-template-columns: 1fr; } }
+.dialog-form mat-form-field { width: 100%; }
+
+// Reduced motion
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

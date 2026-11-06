@@ -1,0 +1,54 @@
+<div class="page">
+  <app-page-header title="Monthly ledger" subtitle="Opening balance, collections, spending and the carried-forward closing balance">
+    <button mat-stroked-button (click)="exportCsv()" [disabled]="!rows().length"><mat-icon>download</mat-icon> Export CSV</button>
+    <button mat-stroked-button (click)="load()" [disabled]="loading()"><mat-icon>refresh</mat-icon> Refresh</button>
+  </app-page-header>
+
+  @if (loading()) { <mat-progress-bar mode="indeterminate" style="margin-bottom:16px" /> }
+
+  @if (!loading() && !rows().length) {
+    <div class="card">
+      <app-empty-state icon="account_balance" title="No ledger rows yet" message="A row is generated automatically at the start of each month by the API's scheduled job." />
+    </div>
+  } @else if (rows().length) {
+    <div class="card">
+      <div class="card-header"><h2>Trend</h2><span class="muted">Last {{ last12().length }} months</span></div>
+      <div class="chart-wrap"><app-bar-chart [labels]="labels()" [series]="series()" ariaLabel="Monthly ledger trend" /></div>
+    </div>
+
+    <div class="card">
+      <div class="table-scroll">
+        <table mat-table [dataSource]="data" matSort matSortActive="period" matSortDirection="desc" class="data-table">
+          <ng-container matColumnDef="period">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Month</th>
+            <td mat-cell *matCellDef="let s"><strong>{{ s.month | monthName }} {{ s.year }}</strong></td>
+          </ng-container>
+          <ng-container matColumnDef="openningBalance">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="num">Opening</th>
+            <td mat-cell *matCellDef="let s" class="num">{{ s.openningBalance | pkr }}</td>
+          </ng-container>
+          <ng-container matColumnDef="totalFund">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="num">Collected</th>
+            <td mat-cell *matCellDef="let s" class="num">{{ s.totalFund | pkr }}</td>
+          </ng-container>
+          <ng-container matColumnDef="expense">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="num">Spent</th>
+            <td mat-cell *matCellDef="let s" class="num">{{ s.expense | pkr }}</td>
+          </ng-container>
+          <ng-container matColumnDef="net">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="num">Net</th>
+            <td mat-cell *matCellDef="let s" class="num" [class.pos]="s.totalFund - s.expense >= 0" [class.neg]="s.totalFund - s.expense < 0">
+              {{ s.totalFund - s.expense >= 0 ? '+' : '−' }}{{ (s.totalFund - s.expense < 0 ? s.expense - s.totalFund : s.totalFund - s.expense) | pkr }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="closingBalance">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="num">Closing</th>
+            <td mat-cell *matCellDef="let s" class="num"><strong>{{ s.closingBalance | pkr }}</strong></td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="columns"></tr>
+          <tr mat-row *matRowDef="let row; columns: columns"></tr>
+        </table>
+      </div>
+    </div>
+  }
+</div>

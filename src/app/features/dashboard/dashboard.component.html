@@ -1,0 +1,82 @@
+<div class="page">
+  <app-page-header title="Dashboard" [subtitle]="monthLabel + ' at a glance'">
+    <button mat-stroked-button (click)="load()" [disabled]="loading()"><mat-icon>refresh</mat-icon> Refresh</button>
+    <a mat-flat-button routerLink="../funds" [queryParams]="{ add: 1 }"><mat-icon>add</mat-icon> Record payment</a>
+  </app-page-header>
+
+  @if (loading()) { <mat-progress-bar mode="indeterminate" class="loader" /> }
+
+  <section class="stats">
+    <app-stat-card icon="groups" label="Residents" [value]="'' + residents().length"
+      [hint]="paidCount() + ' paid this month'" link="../residents" tone="primary" />
+    <app-stat-card icon="payments" label="Collected this month" [value]="collected() | pkr"
+      [hint]="outstanding() ? (outstanding() | pkr) + ' outstanding' : 'Nothing outstanding'" link="../funds" tone="positive" />
+    <app-stat-card icon="receipt_long" label="Spent this month" [value]="spent() | pkr"
+      [hint]="expenses().length + ' expense' + (expenses().length === 1 ? '' : 's')" link="../expenses" tone="negative" />
+    <app-stat-card icon="account_balance" label="Closing balance" [value]="(current()?.closingBalance ?? null) | pkr"
+      [hint]="current() ? 'Opened at ' + ((current()!.openningBalance) | pkr) : 'No ledger row for this month yet'" link="../summary" tone="neutral" />
+  </section>
+
+  <section class="grid">
+    <div class="card chart-card">
+      <div class="card-header">
+        <h2>Collected vs. spent</h2>
+        <span class="muted">Last {{ last12().length }} months</span>
+      </div>
+      <div class="card-body">
+        @if (last12().length) {
+          <app-bar-chart [labels]="chartLabels()" [series]="chartSeries()" ariaLabel="Collected versus spent by month" />
+        } @else if (!loading()) {
+          <app-empty-state icon="insights" title="No ledger data yet" message="Monthly summaries appear here once the first month has been generated." />
+        }
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Recent payments</h2>
+        <a mat-button routerLink="../funds">View all</a>
+      </div>
+      @if (recentFunds().length) {
+        <ul class="list">
+          @for (f of recentFunds(); track f.id) {
+            <li>
+              <div>
+                <strong>{{ f.residentName }}</strong>
+                <span class="muted">{{ f.paidTo }} · day {{ f.datePaid }}</span>
+              </div>
+              <div class="amount">
+                <span class="mono">{{ f.paidAmount | pkr }}</span>
+                @if (f.outstanding > 0) { <span class="chip due">{{ f.outstanding | pkr }} due</span> } @else { <span class="chip ok">Paid</span> }
+              </div>
+            </li>
+          }
+        </ul>
+      } @else if (!loading()) {
+        <app-empty-state icon="payments" title="No payments this month" />
+      }
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Recent expenses</h2>
+        <a mat-button routerLink="../expenses">View all</a>
+      </div>
+      @if (recentExpenses().length) {
+        <ul class="list">
+          @for (e of recentExpenses(); track e.id) {
+            <li>
+              <div>
+                <strong>{{ e.description }}</strong>
+                <span class="muted">{{ e.categoryName }} · day {{ e.expenseDate }}</span>
+              </div>
+              <span class="mono">{{ e.amount | pkr }}</span>
+            </li>
+          }
+        </ul>
+      } @else if (!loading()) {
+        <app-empty-state icon="receipt_long" title="No expenses this month" />
+      }
+    </div>
+  </section>
+</div>
