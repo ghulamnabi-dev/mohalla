@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Society_Management_System.Models;
 using Society_Management_System.Services;
@@ -7,6 +8,7 @@ namespace Society_Management_System.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class MonthlyFundController : ControllerBase
     {
         private readonly IMonthlyFundService _monthlyFundService;

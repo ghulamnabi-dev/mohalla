@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build & analyse (.NET 9)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Server/Society Management System
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build (Release, warnings visible)
+        run: dotnet build --no-restore -c Release
+
+      - name: Verify formatting
+        run: dotnet format --verify-no-changes --no-restore --severity warn || echo "::warning::Run 'dotnet format' to tidy formatting"
+
+      - name: Publish artifact
+        run: dotnet publish --no-build -c Release -o ../../publish
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: api
+          path: publish
+          retention-days: 7

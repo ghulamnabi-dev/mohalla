@@ -1,0 +1,31 @@
+# Build output
+bin/
+obj/
+out/
+publish/
+
+# IDE / user state
+.vs/
+.vscode/
+*.user
+*.suo
+*.swp
+.idea/
+
+# Secrets & local config
+appsettings.*.local.json
+secrets.json
+*.env
+.env*
+
+# Test results
+TestResults/
+coverage/
+*.trx
+
+# OS
+.DS_Store
+Thumbs.db
+
+# keep the template
+!.env.example

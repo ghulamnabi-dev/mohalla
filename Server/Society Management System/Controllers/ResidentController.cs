@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Society_Management_System.Models;
 using Society_Management_System.Services;
 using Society_Management_System.DTO;
@@ -7,6 +8,7 @@ namespace Society_Management_System.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ResidentController : ControllerBase
     {
         private readonly IResidentService _residentService;
