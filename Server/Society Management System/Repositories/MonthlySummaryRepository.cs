@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Society_Management_System.Models;
 
 namespace Society_Management_System.Repositories
@@ -10,6 +10,8 @@ namespace Society_Management_System.Repositories
         Task<MonthlySummary> AddMonthlySummary(MonthlySummary summary);
         Task<MonthlySummary> UpdateMonthlySummary(MonthlySummary summary);
         Task<MonthlySummary> GetMonthlySummaryByMonthYear(int month, int year);
+        /// <summary>Returns the ledger row for the month, creating it (with the previous month's closing balance as opening balance) if it does not exist yet.</summary>
+        Task<MonthlySummary> GetOrCreateMonthlySummary(int month, int year);
         Task<MonthlySummary> UpdateMonthlySummaryExpense(int id, int newExpense);
         Task<MonthlySummary> UpdateMonthlySummaryFund(int id, int newFund);
         Task<bool> DeleteMonthlySummary(int id);
@@ -65,6 +67,33 @@ namespace Society_Management_System.Repositories
                 .FirstOrDefaultAsync(ms => ms.Month == month && ms.Year == year);
         }
 
+        public async Task<MonthlySummary> GetOrCreateMonthlySummary(int month, int year)
+        {
+            var existing = await GetMonthlySummaryByMonthYear(month, year);
+            if (existing != null)
+            {
+                return existing;
+            }
+
+            var prevMonth = month == 1 ? 12 : month - 1;
+            var prevYear = month == 1 ? year - 1 : year;
+            var previous = await GetMonthlySummaryByMonthYear(prevMonth, prevYear);
+            var opening = previous?.ClosingBalance ?? 0;
+
+            var created = new MonthlySummary
+            {
+                Month = month,
+                Year = year,
+                OpenningBalance = opening,
+                TotalFund = 0,
+                Expense = 0,
+                ClosingBalance = opening
+            };
+            _context.MonthlySummaries.Add(created);
+            await _context.SaveChangesAsync();
+            return created;
+        }
+
         public async Task<bool> DeleteMonthlySummary(int id)
         {
             var summary = await GetMonthlySummaryById(id);
@@ -99,6 +128,7 @@ namespace Society_Management_System.Repositories
             if (existing != null)
             {
                 existing.TotalFund = existing.TotalFund + newFund;
+                existing.ClosingBalance = existing.OpenningBalance + existing.TotalFund - existing.Expense;
                 await _context.SaveChangesAsync();
                 return existing;
             }

@@ -1,4 +1,4 @@
-﻿using Society_Management_System.Models;
+using Society_Management_System.Models;
 using Society_Management_System.Repositories;
 
 
@@ -81,7 +81,8 @@ namespace Society_Management_System.Services
         }
         private async Task UpdateSummaryFund(int month, int year, int fund)
         {
-            var summary = await _summaryRepository.GetMonthlySummaryByMonthYear(month, year);
+            // Back-dated entries may target a month whose ledger row has not been generated yet.
+            var summary = await _summaryRepository.GetOrCreateMonthlySummary(month, year);
             int id = summary.Id;
             await _summaryRepository.UpdateMonthlySummaryFund(id, fund);
             summary.ClosingBalance = (summary.OpenningBalance + summary.TotalFund) - summary.Expense;
