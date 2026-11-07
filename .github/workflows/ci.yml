@@ -26,5 +26,5 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: web
-          path: dist/sms/browser
+          path: dist/mohalla-web/browser
           retention-days: 7

@@ -1,4 +1,4 @@
-# Society Management System — Web client
+# Mohalla — Web client
 
 [![CI](https://github.com/gn-4200/SMS/actions/workflows/ci.yml/badge.svg)](https://github.com/gn-4200/SMS/actions/workflows/ci.yml)
 ![Angular 19](https://img.shields.io/badge/Angular-19-DD0031?logo=angular&logoColor=white)
@@ -6,7 +6,7 @@
 ![TypeScript strict](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 
-Admin dashboard for a housing society's finances: residents, monthly contributions, categorised expenses and an auto-balancing monthly ledger. Talks to the ASP.NET Core 9 API in **[gn-4200/SocietyManagmentSystem](https://github.com/gn-4200/SocietyManagmentSystem)**.
+**Mohalla** (Urdu: *neighbourhood*) keeps a housing society's books: residents, monthly contributions, categorised expenses and an auto-balancing monthly ledger. This is the Angular client; the ASP.NET Core 9 API lives in **[gn-4200/SocietyManagmentSystem](https://github.com/gn-4200/SocietyManagmentSystem)**.
 
 <p align="center">
   <img src="docs/screenshots/02-dashboard.png" alt="Dashboard — KPIs, 12-month collected vs. spent chart, recent activity" width="100%">
@@ -63,12 +63,12 @@ Point the client at a different API by editing `src/environments/environment.dev
 Start the API with Docker from the server repo: `docker compose up --build` (see its README), or run it with the .NET SDK.
 
 ```bash
-npm run seed         # demo data: 13 residents, 12 months of payments/expenses, ledger rows; creates demo@sms.local
+npm run seed         # demo data: 13 residents, 12 months of payments/expenses, ledger rows; creates demo@mohalla.local
 ```
 
 ```bash
 npm test             # Karma + Jasmine, headless Chrome
-npm run build:prod   # outputs dist/sms/browser — deploy as static files (Vercel, Netlify, GitHub Pages, nginx)
+npm run build:prod   # outputs dist/mohalla-web/browser — deploy as static files (Vercel, Netlify, GitHub Pages, nginx)
 ```
 
 ## Roadmap

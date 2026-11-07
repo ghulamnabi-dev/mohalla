@@ -1,5 +1,5 @@
 {
-  "name": "society-management-system",
+  "name": "mohalla-web",
   "version": "0.0.0",
   "scripts": {
     "start": "ng serve",
@@ -42,5 +42,5 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.7.2"
   },
-  "description": "Angular 19 + Angular Material client for the Society Management System API"
+  "description": "Mohalla \u2014 Angular 19 + Angular Material client for housing-society finances"
 }

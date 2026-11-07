@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "SMS": {
+    "mohalla-web": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/sms",
+            "outputPath": "dist/mohalla-web",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -83,10 +83,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "SMS:build:production"
+              "buildTarget": "mohalla-web:build:production"
             },
             "development": {
-              "buildTarget": "SMS:build:development"
+              "buildTarget": "mohalla-web:build:development"
             }
           },
           "defaultConfiguration": "development"

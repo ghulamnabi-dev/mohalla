@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Injectable, inject, signal } from '@angular/core';
 
-const KEY = 'sms.theme';
+const KEY = 'mohalla.theme';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {

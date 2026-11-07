@@ -1,7 +1,7 @@
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
-const KEY = 'sms.token';
+const KEY = 'mohalla.token';
 
 @Injectable({ providedIn: 'root' })
 export class TokenService {

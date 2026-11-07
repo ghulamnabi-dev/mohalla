@@ -2,7 +2,7 @@
   <mat-sidenav #drawer class="sidenav" [mode]="mode()" [opened]="!isHandset()" [fixedInViewport]="isHandset()">
     <a class="brand" routerLink="dashboard">
       <span class="mark"><mat-icon>apartment</mat-icon></span>
-      <span class="brand-name">Society<span class="brand-sub">Management System</span></span>
+      <span class="brand-name">Mohalla<span class="brand-sub">Society finances</span></span>
     </a>
 
     <nav class="nav" aria-label="Main">
@@ -36,7 +36,7 @@
     @if (isHandset()) {
       <div class="mobile-bar">
         <button mat-icon-button (click)="drawer.toggle()" aria-label="Open navigation"><mat-icon>menu</mat-icon></button>
-        <span class="mobile-title">Society Management System</span>
+        <span class="mobile-title">Mohalla</span>
       </div>
     }
     <main class="content">

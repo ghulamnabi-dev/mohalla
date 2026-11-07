@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Seeds a running Society Management System API with a realistic demo dataset:
+ * Seeds a running Mohalla API with a realistic demo dataset:
  * 13 residents, 6 expense categories, 12 months of contributions and expenses,
  * and the matching monthly ledger rows (computed by the API itself).
  *
@@ -10,7 +10,7 @@
  * Safe to re-run: residents and categories that already exist are reused.
  */
 const API = (process.env.API_URL ?? 'http://localhost:5091/api').replace(/\/$/, '');
-const EMAIL = process.env.EMAIL ?? 'demo@sms.local';
+const EMAIL = process.env.EMAIL ?? 'demo@mohalla.local';
 const PASSWORD = process.env.PASSWORD ?? 'Demo#Pass2026';
 
 const log = (...a) => console.log('[seed]', ...a);
