@@ -22,13 +22,13 @@ Admin dashboard for a housing society's finances: residents, monthly contributio
 
 ## Features
 
-- **Dashboard** — residents, collected / outstanding this month, spent this month, closing balance; a 12-month collected-vs-spent chart; recent payments and expenses.
+- **Dashboard** — KPIs with month-over-month deltas, a 12-month collected-vs-spent chart, this month's collection progress with the households that have not paid (tap to call), and a merged activity table.
 - **Residents** — searchable, sortable, paginated table; add/edit in a dialog with validation (11-digit phone).
 - **Contributions** — year/month filters, running totals, paid/outstanding chips; record a payment by picking the resident and a date, outstanding computed live.
 - **Expenses** — category filter, inline category management (add / rename / delete persisted to the API).
 - **Monthly ledger** — opening, collected, spent, net and closing per month; trend chart; CSV export.
 - **Auth** — JWT stored client-side, route guards, bearer interceptor, automatic sign-out on 401, session-expiry check from the token's `exp`.
-- **UI** — Material 3 theming with light/dark toggle (persisted, no flash on load), responsive down to 375 px, self-hosted Inter + Material Icons (no third-party font CDN), reduced-motion support.
+- **UI** — a quiet admin aesthetic: one accent, flat surfaces, dense tables, tabular figures; light/dark theme persisted with no flash on load; responsive to 375 px; self-hosted Inter + Material Icons; reduced-motion support.
 
 ## Stack & conventions
 

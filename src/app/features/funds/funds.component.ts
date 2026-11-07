@@ -51,7 +51,8 @@ export class FundsComponent {
     this.all().filter((f) => (this.year() === 'all' || f.year === this.year()) && (this.month() === 'all' || f.month === this.month())),
   );
   readonly totalPaid = computed(() => this.visible().reduce((s, f) => s + f.paidAmount, 0));
-  readonly totalDue = computed(() => this.visible().reduce((s, f) => s + f.outstanding, 0));
+  /** Shortfall on the visible payments (amount due minus paid); the API's `outstanding` is a per-resident running balance. */
+  readonly totalDue = computed(() => this.visible().reduce((s, f) => s + Math.max(f.amount - f.paidAmount, 0), 0));
 
   @ViewChild(MatSort) set sort(s: MatSort) { this.data.sort = s; }
   @ViewChild(MatPaginator) set paginator(p: MatPaginator) { this.data.paginator = p; }

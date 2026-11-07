@@ -1,22 +1,21 @@
 <div class="page">
   <app-page-header title="Monthly ledger" subtitle="Opening balance, collections, spending and the carried-forward closing balance">
-    <button mat-stroked-button (click)="exportCsv()" [disabled]="!rows().length"><mat-icon>download</mat-icon> Export CSV</button>
-    <button mat-stroked-button (click)="load()" [disabled]="loading()"><mat-icon>refresh</mat-icon> Refresh</button>
+    <button mat-stroked-button (click)="exportCsv()" [disabled]="!rows().length">Export CSV</button>
   </app-page-header>
 
   @if (loading()) { <mat-progress-bar mode="indeterminate" style="margin-bottom:16px" /> }
 
   @if (!loading() && !rows().length) {
-    <div class="card">
+    <div class="panel">
       <app-empty-state icon="account_balance" title="No ledger rows yet" message="A row is generated automatically at the start of each month by the API's scheduled job." />
     </div>
   } @else if (rows().length) {
-    <div class="card">
-      <div class="card-header"><h2>Trend</h2><span class="muted">Last {{ last12().length }} months</span></div>
-      <div class="chart-wrap"><app-bar-chart [labels]="labels()" [series]="series()" ariaLabel="Monthly ledger trend" /></div>
+    <div class="panel">
+      <div class="panel-head"><h2>Trend</h2><span class="sub">Last {{ last12().length }} months</span></div>
+      <div class="panel-body"><app-bar-chart [labels]="labels()" [series]="series()" ariaLabel="Monthly ledger trend" /></div>
     </div>
 
-    <div class="card">
+    <div class="panel">
       <div class="table-scroll">
         <table mat-table [dataSource]="data" matSort matSortActive="period" matSortDirection="desc" class="data-table">
           <ng-container matColumnDef="period">

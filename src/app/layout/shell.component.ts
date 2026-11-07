@@ -48,6 +48,7 @@ export class ShellComponent {
   );
   readonly mode = computed(() => (this.isHandset() ? 'over' : 'side'));
   readonly userName = this.auth.userName;
+  readonly userEmail = this.auth.userEmail;
   readonly initials = computed(() =>
     this.userName()
       .split(/[\s@._-]+/)

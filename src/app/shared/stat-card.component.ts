@@ -1,55 +1,48 @@
 import { Component, input } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 
-/** A KPI tile for the dashboard. */
+/**
+ * A KPI tile. Fixed height; the label never wraps, the figure is tabular,
+ * and the optional delta is coloured by sign.
+ */
 @Component({
   selector: 'app-stat-card',
-  imports: [MatIconModule, RouterLink],
+  imports: [RouterLink],
   template: `
-    <a class="stat" [routerLink]="link()" [class]="'tone-' + tone()">
-      <div class="icon"><mat-icon>{{ icon() }}</mat-icon></div>
-      <div class="body">
-        <span class="label">{{ label() }}</span>
-        <span class="value">{{ value() }}</span>
-        @if (hint()) {
-          <span class="hint">{{ hint() }}</span>
+    <a class="stat" [routerLink]="link()">
+      <span class="label">{{ label() }}</span>
+      <span class="value">{{ value() }}</span>
+      <span class="foot">
+        @if (delta() != null) {
+          <span class="delta" [class.good]="(delta()! > 0) === (goodWhen() === 'up')" [class.bad]="(delta()! > 0) !== (goodWhen() === 'up')">{{ delta()! > 0 ? '+' : '' }}{{ delta() }}%</span>
         }
-      </div>
-      <mat-icon class="chev">chevron_right</mat-icon>
+        @if (hint()) { <span class="hint">{{ hint() }}</span> }
+      </span>
     </a>
   `,
   styles: `
+    :host { display: block; min-width: 0; }
     .stat {
-      display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px;
-      padding: 18px 16px; border-radius: 16px; min-width: 0; text-decoration: none; color: inherit;
-      background: var(--mat-sys-surface-container-low);
-      border: 1px solid var(--mat-sys-outline-variant);
-      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
-      &:hover { transform: translateY(-1px); box-shadow: var(--mat-sys-level2); border-color: var(--mat-sys-outline); }
+      display: grid; grid-template-rows: auto 1fr auto; height: 108px; padding: 16px 18px;
+      border: 1px solid var(--line); border-radius: var(--radius-l); background: var(--surface);
+      color: inherit; text-decoration: none; transition: border-color .12s;
+      &:hover { border-color: var(--line-strong); text-decoration: none; }
     }
-    .icon {
-      display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px;
-      background: var(--tone-bg); color: var(--tone-fg);
-    }
-    .body { display: grid; gap: 2px; min-width: 0; }
-    .label { font: var(--mat-sys-label-large); color: var(--mat-sys-on-surface-variant); }
-    .value { font: var(--mat-sys-headline-small); font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
-    .label { line-height: 1.2; }
-    .hint { font: var(--mat-sys-body-small); color: var(--mat-sys-on-surface-variant); }
-    .chev { color: var(--mat-sys-outline); }
-    .tone-primary { --tone-bg: var(--mat-sys-primary-container); --tone-fg: var(--mat-sys-on-primary-container); }
-    .tone-positive { --tone-bg: color-mix(in srgb, #2e7d32 18%, transparent); --tone-fg: #2e7d32; }
-    .tone-negative { --tone-bg: var(--mat-sys-error-container); --tone-fg: var(--mat-sys-on-error-container); }
-    .tone-neutral { --tone-bg: var(--mat-sys-secondary-container); --tone-fg: var(--mat-sys-on-secondary-container); }
-    :host-context(.dark) .tone-positive { --tone-fg: #81c784; }
+    .label { font-size: 12.5px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .value { align-self: end; font-size: 26px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .foot { display: flex; align-items: baseline; gap: 8px; margin-top: 6px; font-size: 12px; color: var(--ink-3); white-space: nowrap; overflow: hidden; }
+    .delta { font-weight: 600; font-variant-numeric: tabular-nums; }
+    .delta.good { color: var(--positive); }
+    .delta.bad { color: var(--negative); }
+    .hint { overflow: hidden; text-overflow: ellipsis; }
   `,
 })
 export class StatCardComponent {
-  icon = input.required<string>();
   label = input.required<string>();
   value = input.required<string>();
   hint = input<string>();
+  delta = input<number | null>(null);
   link = input<string | unknown[]>('.');
-  tone = input<'primary' | 'positive' | 'negative' | 'neutral'>('primary');
+  /** Which direction of change is desirable — spending going down is good. */
+  goodWhen = input<'up' | 'down'>('up');
 }

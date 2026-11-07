@@ -28,6 +28,13 @@ export class AuthService {
     return name.includes('@') ? name.split('@')[0] : name;
   });
 
+  /** Full e-mail address from the token, if the name claim is one. */
+  readonly userEmail = computed(() => {
+    const p = this.tokens.payload();
+    const name = (p?.[NAME_CLAIM] ?? p?.['name'] ?? p?.['unique_name'] ?? p?.['email']) as string | undefined;
+    return name?.includes('@') ? name : null;
+  });
+
   login(body: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.base}/login`, body).pipe(tap((r) => this.store(r.token)));
   }

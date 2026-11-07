@@ -1,50 +1,44 @@
 <mat-sidenav-container class="shell">
   <mat-sidenav #drawer class="sidenav" [mode]="mode()" [opened]="!isHandset()" [fixedInViewport]="isHandset()">
     <a class="brand" routerLink="dashboard">
-      <span class="logo"><mat-icon>apartment</mat-icon></span>
-      <span class="brand-text">
-        <strong>Society</strong>
-        <small>Management System</small>
-      </span>
+      <span class="mark"><mat-icon>apartment</mat-icon></span>
+      <span class="brand-name">Society<span class="brand-sub">Management System</span></span>
     </a>
 
-    <mat-nav-list class="nav">
+    <nav class="nav" aria-label="Main">
       @for (item of nav; track item.path) {
-        <a mat-list-item [routerLink]="item.path" routerLinkActive="active" (click)="isHandset() && drawer.close()">
-          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-          <span matListItemTitle>{{ item.label }}</span>
+        <a [routerLink]="item.path" routerLinkActive="active" (click)="isHandset() && drawer.close()">
+          <mat-icon>{{ item.icon }}</mat-icon>
+          <span>{{ item.label }}</span>
         </a>
       }
-    </mat-nav-list>
+    </nav>
 
-    <div class="sidenav-footer">
-      <a href="https://github.com/gn-4200/SocietyManagmentSystem" target="_blank" rel="noopener" class="muted">
-        <mat-icon>code</mat-icon> API on GitHub
-      </a>
+    <div class="sidenav-foot">
+      <button class="account" [matMenuTriggerFor]="userMenu" aria-label="Account menu">
+        <span class="avatar">{{ initials() }}</span>
+        <span class="account-text">
+          <span class="account-name">{{ userName() }}</span>
+          <span class="account-role">{{ userEmail() ?? 'Signed in' }}</span>
+        </span>
+        <mat-icon>unfold_more</mat-icon>
+      </button>
+      <mat-menu #userMenu="matMenu" yPosition="above">
+        <button mat-menu-item (click)="theme.toggle()"><mat-icon>{{ theme.dark() ? 'light_mode' : 'dark_mode' }}</mat-icon>{{ theme.dark() ? 'Light theme' : 'Dark theme' }}</button>
+        <a mat-menu-item href="https://github.com/gn-4200/SocietyManagmentSystem" target="_blank" rel="noopener"><mat-icon>code</mat-icon>API on GitHub</a>
+        <mat-divider />
+        <button mat-menu-item (click)="logout()"><mat-icon>logout</mat-icon>Sign out</button>
+      </mat-menu>
     </div>
   </mat-sidenav>
 
   <mat-sidenav-content>
-    <mat-toolbar class="topbar">
-      @if (isHandset()) {
-        <button mat-icon-button (click)="drawer.toggle()" aria-label="Toggle navigation"><mat-icon>menu</mat-icon></button>
-      }
-      <span class="spacer"></span>
-      <button mat-icon-button (click)="theme.toggle()" [matTooltip]="theme.dark() ? 'Light mode' : 'Dark mode'" aria-label="Toggle theme">
-        <mat-icon>{{ theme.dark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
-      </button>
-      <button mat-button [matMenuTriggerFor]="userMenu" class="user-btn">
-        <span class="avatar">{{ initials() }}</span>
-        <span class="user-name">{{ userName() }}</span>
-        <mat-icon>expand_more</mat-icon>
-      </button>
-      <mat-menu #userMenu="matMenu" xPosition="before">
-        <button mat-menu-item disabled><mat-icon>person</mat-icon>{{ userName() }}</button>
-        <mat-divider />
-        <button mat-menu-item (click)="logout()"><mat-icon>logout</mat-icon>Sign out</button>
-      </mat-menu>
-    </mat-toolbar>
-
+    @if (isHandset()) {
+      <div class="mobile-bar">
+        <button mat-icon-button (click)="drawer.toggle()" aria-label="Open navigation"><mat-icon>menu</mat-icon></button>
+        <span class="mobile-title">Society Management System</span>
+      </div>
+    }
     <main class="content">
       <router-outlet />
     </main>

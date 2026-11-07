@@ -18,10 +18,8 @@ import { PkrPipe } from '../../shared/pkr.pipe';
   imports: [MatTableModule, MatSortModule, MatButtonModule, MatIconModule, MatProgressBarModule, PageHeaderComponent, EmptyStateComponent, BarChartComponent, PkrPipe, MonthNamePipe],
   templateUrl: './summary.component.html',
   styles: `
-    .chart-wrap { padding: 20px; }
-    td.pos { color: #2e7d32; } td.neg { color: var(--mat-sys-error); }
-    :host-context(html.dark) td.pos { color: #81c784; }
-    .card + .card { margin-top: 16px; }
+    td.pos { color: var(--positive); } td.neg { color: var(--negative); }
+    .panel + .panel { margin-top: 16px; }
   `,
 })
 export class SummaryComponent {
