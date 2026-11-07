@@ -72,7 +72,7 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "Society Management System API",
+        Title = "Mohalla API",
         Version = "v1",
         Description = "Residents, monthly funds, expenses and automatically generated monthly summaries for a housing society."
     });
@@ -135,7 +135,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Society Management System API v1");
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Mohalla API v1");
         options.RoutePrefix = string.Empty; // Swagger UI at the site root in development
     });
 }
