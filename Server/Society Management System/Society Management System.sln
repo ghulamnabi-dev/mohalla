@@ -4,6 +4,8 @@ VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Society Management System", "Society Management System.csproj", "{FBF180CD-46CC-43A4-A429-88281ADCDE97}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Society Management System.Tests", "..\Society Management System.Tests\Society Management System.Tests.csproj", "{0D5B7C3A-5E7F-4C1B-9E3D-7A2F1B6C8D90}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -14,6 +16,10 @@ Global
 		{FBF180CD-46CC-43A4-A429-88281ADCDE97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FBF180CD-46CC-43A4-A429-88281ADCDE97}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FBF180CD-46CC-43A4-A429-88281ADCDE97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D5B7C3A-5E7F-4C1B-9E3D-7A2F1B6C8D90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D5B7C3A-5E7F-4C1B-9E3D-7A2F1B6C8D90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D5B7C3A-5E7F-4C1B-9E3D-7A2F1B6C8D90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D5B7C3A-5E7F-4C1B-9E3D-7A2F1B6C8D90}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

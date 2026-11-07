@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Society_Management_System.Models;
 using Society_Management_System.Services;
 using Microsoft.Identity;
@@ -52,6 +52,7 @@ namespace Society_Management_System.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<MonthlySummary>> AddMonthlySummary(MonthlySummary summary)
         {
             var addedSummary = await _monthlySummaryService.AddMonthlySummary(summary);
@@ -59,6 +60,7 @@ namespace Society_Management_System.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<MonthlySummary>> UpdateMonthlySummary(int id, MonthlySummary summary)
         {
             if (id != summary.Id)
@@ -77,6 +79,7 @@ namespace Society_Management_System.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> DeleteMonthlySummary(int id)
         {
             var deleted = await _monthlySummaryService.DeleteMonthlySummary(id);

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Society_Management_System.DTO;
 using Society_Management_System.Models;
 using Society_Management_System.Services;
 
@@ -22,6 +23,13 @@ namespace Society_Management_System.Controllers
         {
             var expenses = await _monthlyExpenseService.GetAllExpenses();
             return Ok(expenses);
+        }
+
+        /// <summary>Paged, filterable expenses joined with category names. sort: period|description|category|amount.</summary>
+        [HttpGet("search")]
+        public async Task<ActionResult<PagedResult<ExpenseRowDto>>> Search([FromQuery] ExpenseQuery query, [FromServices] IReportingService reporting)
+        {
+            return Ok(await reporting.SearchExpenses(query));
         }
 
         [HttpGet("{id}")]
@@ -51,6 +59,7 @@ namespace Society_Management_System.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<MonthlyExpense>> AddExpense(MonthlyExpense expense)
         {
             var createdExpense = await _monthlyExpenseService.AddExpense(expense);
@@ -58,6 +67,7 @@ namespace Society_Management_System.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<MonthlyExpense>> UpdateExpense(int id, MonthlyExpense expense)
         {
             if (id != expense.Id)
@@ -76,6 +86,7 @@ namespace Society_Management_System.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> DeleteExpense(int id)
         {
             var deleted = await _monthlyExpenseService.DeleteExpense(id);

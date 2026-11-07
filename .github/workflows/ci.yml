@@ -9,12 +9,12 @@ permissions:
   contents: read
 
 jobs:
-  build:
-    name: Build & analyse (.NET 9)
+  build-test:
+    name: Build & test (.NET 9)
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: Server/Society Management System
+        working-directory: Server
     steps:
       - uses: actions/checkout@v4
 
@@ -23,16 +23,23 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Restore
-        run: dotnet restore
+        run: dotnet restore "Society Management System/Society Management System.sln"
 
-      - name: Build (Release, warnings visible)
-        run: dotnet build --no-restore -c Release
+      - name: Build (Release)
+        run: dotnet build "Society Management System/Society Management System.sln" --no-restore -c Release
 
-      - name: Verify formatting
-        run: dotnet format --verify-no-changes --no-restore --severity warn || echo "::warning::Run 'dotnet format' to tidy formatting"
+      - name: Integration tests (SQLite in-memory)
+        run: dotnet test "Society Management System.Tests/Society Management System.Tests.csproj" --no-build -c Release --logger "trx;LogFileName=results.trx"
 
-      - name: Publish artifact
-        run: dotnet publish --no-build -c Release -o ../../publish
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: Server/Society Management System.Tests/TestResults
+          retention-days: 7
+
+      - name: Publish API
+        run: dotnet publish "Society Management System/Society Management System.csproj" --no-build -c Release -o ../publish
 
       - uses: actions/upload-artifact@v4
         with:

@@ -38,7 +38,16 @@ namespace Society_Management_System.Controllers
             return Ok(resident);
         }
 
+        /// <summary>A resident's complete payment history with totals.</summary>
+        [HttpGet("{id}/statement")]
+        public async Task<ActionResult<ResidentStatementDto>> Statement(int id, [FromServices] IReportingService reporting)
+        {
+            var statement = await reporting.GetResidentStatement(id);
+            return statement == null ? NotFound() : Ok(statement);
+        }
+
         [HttpPost]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<Resident>> AddResident(Resident resident)
         {
             var addedResident = await _residentService.AddResident(resident);
@@ -58,6 +67,7 @@ namespace Society_Management_System.Controllers
             }
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<Resident>> UpdateResident(int id, Resident resident)
         {
             if (id != resident.Id)
@@ -76,6 +86,7 @@ namespace Society_Management_System.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> DeleteResident(int id)
         {
             var deleted = await _residentService.DeleteResident(id);

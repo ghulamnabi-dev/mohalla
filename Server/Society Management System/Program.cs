@@ -1,8 +1,10 @@
+using System.Security.Claims;
 using System.Text;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Society_Management_System;
@@ -34,11 +36,33 @@ var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get
 // ---------------------------------------------------------------------------
 // Services
 // ---------------------------------------------------------------------------
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        // Model validation failures come back as RFC 7807 ValidationProblemDetails with per-field errors.
+        options.InvalidModelStateResponseFactory = context =>
+            new BadRequestObjectResult(new ValidationProblemDetails(context.ModelState)
+            {
+                Title = "One or more fields are invalid.",
+                Status = StatusCodes.Status400BadRequest,
+            });
+    });
+builder.Services.AddProblemDetails();
 
-builder.Services.AddDbContext<SMSContext>(options => options.UseSqlServer(connectionString));
+// SQL Server in normal use; SQLite when Database:Provider=Sqlite (used by the integration tests).
+var useSqlite = string.Equals(builder.Configuration["Database:Provider"], "Sqlite", StringComparison.OrdinalIgnoreCase);
+builder.Services.AddDbContext<SMSContext>(options =>
+{
+    if (useSqlite) options.UseSqlite(connectionString);
+    else options.UseSqlServer(connectionString);
+});
 
-builder.Services.AddIdentity<User, IdentityRole>()
+builder.Services.AddIdentity<User, IdentityRole>(options =>
+    {
+        options.User.RequireUniqueEmail = true;
+        options.Password.RequiredLength = 8;
+    })
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<SMSContext>()
     .AddDefaultTokenProviders();
 
@@ -55,6 +79,7 @@ builder.Services.AddScoped<IMonthlySummaryService, MonthlySummaryService>();
 builder.Services.AddScoped<IExpenseCategoryService, ExpenseCategoryService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IReportingService, ReportingService>();
 
 builder.Services.AddCors(options =>
 {
@@ -64,8 +89,12 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod());
 });
 
-builder.Services.AddHangfire(config => config.UseSqlServerStorage(connectionString));
-builder.Services.AddHangfireServer();
+var hangfireEnabled = builder.Configuration.GetValue("Hangfire:Enabled", true) && !useSqlite;
+if (hangfireEnabled)
+{
+    builder.Services.AddHangfire(config => config.UseSqlServerStorage(connectionString));
+    builder.Services.AddHangfireServer();
+}
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -118,7 +147,9 @@ builder.Services
             ValidIssuer = builder.Configuration["JWT:Issuer"],
             ValidAudience = builder.Configuration["JWT:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
-            ClockSkew = TimeSpan.FromMinutes(1)
+            ClockSkew = TimeSpan.FromMinutes(1),
+            RoleClaimType = ClaimTypes.Role,
+            NameClaimType = ClaimTypes.Name,
         };
     });
 
@@ -127,9 +158,25 @@ builder.Services.AddHealthChecks().AddDbContextCheck<SMSContext>();
 
 var app = builder.Build();
 
+// Make sure the two application roles exist before the first request.
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    foreach (var role in Roles.All)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Middleware pipeline (order matters)
 // ---------------------------------------------------------------------------
+app.UseExceptionHandler();   // unhandled exceptions -> ProblemDetails (stack traces only in Development)
+app.UseStatusCodePages();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -145,16 +192,24 @@ app.UseCors("AllowAngularApp");
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseHangfireDashboard("/hangfire");
+if (hangfireEnabled)
+{
+    app.UseHangfireDashboard("/hangfire");
+}
 
 app.MapHealthChecks("/health");
 app.MapControllers();
 
-// Create the summary row for a new month once, at 00:05 on the 1st.
-// (Previously "* * * * *", which ran every minute.)
-RecurringJob.AddOrUpdate<IMonthlySummaryService>(
-    "GenerateMonthlySummary",
-    service => service.GenerateSummaryForCurrentMonth(),
-    "5 0 1 * *");
+if (hangfireEnabled)
+{
+    // Create the summary row for a new month once, at 00:05 on the 1st.
+    RecurringJob.AddOrUpdate<IMonthlySummaryService>(
+        "GenerateMonthlySummary",
+        service => service.GenerateSummaryForCurrentMonth(),
+        "5 0 1 * *");
+}
 
 app.Run();
+
+/// <summary>Exposes the entry point to WebApplicationFactory in the integration tests.</summary>
+public partial class Program { }

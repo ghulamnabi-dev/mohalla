@@ -16,7 +16,9 @@ The Angular 19 client lives in **[gn-4200/SMS](https://github.com/gn-4200/SMS)**
 - **Monthly funds** — record each resident's contribution with amount paid, outstanding balance and date; query by month or by resident.
 - **Expenses** — log spending against user-defined categories; query by month and year.
 - **Monthly summary (ledger)** — opening balance, total collected, total spent, closing balance. A Hangfire recurring job creates the row for a new month on the 1st; the service computes totals and rolls the previous month's closing balance into the new opening balance (including across the year boundary).
-- **Auth** — ASP.NET Core Identity users, JWT bearer tokens (1-hour expiry). Every data endpoint requires a valid token.
+- **Auth & roles** — ASP.NET Core Identity users, JWT bearer tokens (8-hour expiry) carrying a role claim. Two roles: **Admin** (full access) and **Viewer** (read-only). The first account registered on a database becomes Admin; admins promote or demote others from the Users page. Every data endpoint requires a token; every write requires Admin.
+- **Reporting** — paged, filterable, sortable `search` endpoints for contributions and expenses (joined with resident/category names), and a per-resident statement with totals.
+- **Validation** — data annotations on every model and DTO; failures return RFC 7807 `ValidationProblemDetails` with per-field errors; unhandled errors return `ProblemDetails`.
 
 ## Architecture
 
@@ -47,15 +49,20 @@ All routes are prefixed with `/api`. Everything except `/auth/*` and `/health` n
 
 | Method | Route | Purpose |
 |---|---|---|
-| POST | `/auth/register` | Create user, returns JWT |
-| POST | `/auth/login` | Returns JWT |
+| POST | `/auth/register` | Create user (first user = Admin), returns token + role |
+| POST | `/auth/login` | Returns token + role |
+| GET | `/auth/me` | Signed-in user's profile and role |
+| GET | `/auth/users` · PUT `/auth/users/{id}/role` | Admin: list accounts, change a role |
 | GET / POST | `/resident` | List / add residents |
 | GET / PUT / DELETE | `/resident/{id}` | Single resident |
 | POST | `/resident/checkResident` | Validate a house number |
+| GET | `/resident/{id}/statement` | Payment history with totals |
 | GET / POST | `/monthlyfund` | List / add contributions |
+| GET | `/monthlyfund/search?page&pageSize&year&month&residentId&q&sort&dir` | Paged rows with resident names |
 | GET | `/monthlyfund/month/{month}` · `/monthlyfund/resident/{id}` | Filtered contributions |
 | PUT / DELETE | `/monthlyfund/{id}` | Edit / remove |
 | GET / POST | `/monthlyexpense` | List / add expenses |
+| GET | `/monthlyexpense/search?page&pageSize&year&month&categoryId&q&sort&dir` | Paged rows with category names |
 | GET | `/monthlyexpense/month/{m}/year/{y}` | Expenses for a month |
 | GET / POST | `/expensecategory` · `/expensecategory/{id}` | Categories CRUD |
 | GET | `/monthlysummary` · `/monthlysummary/month/{m}/year/{y}` | Ledger |
@@ -101,6 +108,15 @@ Then start the client: `git clone https://github.com/gn-4200/SMS && cd SMS && np
 
 Environment variables use `__` as the separator (`JWT__Secret`, `ConnectionStrings__DefaultConnection`).
 
+## Tests
+
+```bash
+cd Server
+dotnet test "Society Management System.Tests"
+```
+
+Integration tests boot the real API with `WebApplicationFactory` against an in-memory SQLite database (Hangfire disabled via `Hangfire:Enabled=false`, provider via `Database:Provider=Sqlite`). They cover: first-user-is-admin, viewers are read-only, role changes, validation errors, the ledger roll-forward across months, back-dated entries creating their ledger row, the resident statement, and paging/filtering.
+
 ## Engineering notes
 
 - **Secrets are never committed.** `appsettings.json` holds empty placeholders; real values come from user-secrets or the environment and the app fails fast at startup if they're missing.
@@ -110,10 +126,11 @@ Environment variables use `__` as the separator (`JWT__Secret`, `ConnectionStrin
 
 ### Roadmap
 
-- [ ] Role-based access (admin vs resident)
-- [ ] Integration tests with `WebApplicationFactory` + Testcontainers
-- [ ] Paginated list endpoints
+- [x] Role-based access (Admin / Viewer)
+- [x] Integration tests with `WebApplicationFactory`
+- [x] Paged, filterable list endpoints
 - [ ] Deploy to Azure App Service (free tier) with a demo login
+- [ ] Receipt PDF per payment
 
 ## License
 

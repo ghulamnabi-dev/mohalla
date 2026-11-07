@@ -38,6 +38,7 @@ namespace Society_Management_System.Controllers
 
         // POST: api/ExpenseCategory
         [HttpPost]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<ExpenseCategory>> AddCategory([FromBody] ExpenseCategory category)
         {
             if (!ModelState.IsValid)
@@ -49,6 +50,7 @@ namespace Society_Management_System.Controllers
 
         // PUT: api/ExpenseCategory/5
         [HttpPut("{id}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<ExpenseCategory>> UpdateCategory(int id, [FromBody] ExpenseCategory category)
         {
             if (id != category.Id)
@@ -63,6 +65,7 @@ namespace Society_Management_System.Controllers
 
         // DELETE: api/ExpenseCategory/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> DeleteCategory(int id)
         {
             var deleted = await _categoryService.DeleteCategory(id);

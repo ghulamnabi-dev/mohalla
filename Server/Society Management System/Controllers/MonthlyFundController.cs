@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Society_Management_System.DTO;
 using Society_Management_System.Models;
 using Society_Management_System.Services;
 
@@ -26,6 +27,13 @@ namespace Society_Management_System.Controllers
         }
 
         
+        /// <summary>Paged, filterable contributions joined with resident names. sort: period|resident|amount|paid|short.</summary>
+        [HttpGet("search")]
+        public async Task<ActionResult<PagedResult<FundRowDto>>> Search([FromQuery] FundQuery query, [FromServices] IReportingService reporting)
+        {
+            return Ok(await reporting.SearchFunds(query));
+        }
+
         [HttpGet("month/{month}")]
         public async Task<ActionResult<MonthlyFund>> GetFundByMonth(int month)
         {
@@ -53,6 +61,7 @@ namespace Society_Management_System.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<MonthlyFund>> CreateFund(MonthlyFund fund)
         {
             var createdFund = await _monthlyFundService.CreateFund(fund);
@@ -60,6 +69,7 @@ namespace Society_Management_System.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<MonthlyFund>> UpdateFund(int id,[FromBody] MonthlyFund fund)
         {
             if (id != fund.Id)
@@ -78,6 +88,7 @@ namespace Society_Management_System.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> DeleteFund(int id)
         {
             var deleted = await _monthlyFundService.DeleteFund(id);
