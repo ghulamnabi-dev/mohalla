@@ -22,7 +22,7 @@ export interface BarSeries {
         }
         @for (g of groups(); track g.label) {
           @for (b of g.bars; track b.name) {
-            <rect [attr.x]="b.x" [attr.y]="b.y" [attr.width]="b.w" [attr.height]="b.h" [attr.fill]="b.color" rx="2">
+            <rect [attr.x]="b.x" [attr.y]="b.y" [attr.width]="b.w" [attr.height]="b.h" [attr.fill]="b.color" rx="3">
               <title>{{ g.label }} · {{ b.name }}: {{ b.value | number: '1.0-0' }}</title>
             </rect>
           }
@@ -41,7 +41,7 @@ export interface BarSeries {
     .chart { margin: 0; }
     svg { width: 100%; height: 240px; display: block; overflow: visible; }
     .grid { stroke: var(--mat-sys-outline-variant); stroke-width: 1; }
-    .tick { font-size: 10px; fill: var(--mat-sys-on-surface-variant); font-family: inherit; }
+    .tick { font-size: 10.5px; fill: var(--mat-sys-on-surface-variant); font-family: Inter, system-ui, sans-serif; font-variant-numeric: tabular-nums; }
     rect { transition: opacity .15s; }
     rect:hover { opacity: .8; }
     .legend { display: flex; gap: 16px; margin-top: 8px; font: var(--mat-sys-label-medium); color: var(--mat-sys-on-surface-variant);
@@ -81,7 +81,7 @@ export class BarChartComponent {
     const series = this.series();
     const innerW = this.W - this.padL - this.padR;
     const groupW = innerW / Math.max(labels.length, 1);
-    const gap = groupW * 0.25;
+    const gap = groupW * 0.38;
     const barW = (groupW - gap) / Math.max(series.length, 1);
     return labels.map((label, i) => {
       const x0 = this.padL + i * groupW + gap / 2;
@@ -91,7 +91,7 @@ export class BarChartComponent {
         bars: series.map((s, j) => {
           const value = s.values[i] ?? 0;
           const y = this.yFor(value);
-          return { name: s.name, color: s.color, value, x: x0 + j * barW, w: Math.max(barW - 2, 1), y, h: this.H - this.padB - y };
+          return { name: s.name, color: s.color, value, x: x0 + j * barW, w: Math.max(barW - 3, 1), y, h: Math.max(this.H - this.padB - y, 0) };
         }),
       };
     });

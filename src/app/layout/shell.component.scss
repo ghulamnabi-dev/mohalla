@@ -42,7 +42,7 @@
   .spacer { flex: 1; }
 }
 
-.user-btn { display: inline-flex; align-items: center; gap: 8px; padding-inline: 8px 4px; }
+.user-btn { display: inline-flex; align-items: center; gap: 8px; padding-inline: 8px 4px; white-space: nowrap; ::ng-deep .mdc-button__label { display: inline-flex; align-items: center; gap: 8px; } }
 .avatar {
   display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%;
   background: var(--mat-sys-primary-container); color: var(--mat-sys-on-primary-container);

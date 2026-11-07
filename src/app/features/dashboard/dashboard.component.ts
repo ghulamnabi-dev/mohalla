@@ -16,10 +16,11 @@ import { EmptyStateComponent } from '../../shared/empty-state.component';
 import { PageHeaderComponent } from '../../shared/page-header.component';
 import { PkrPipe } from '../../shared/pkr.pipe';
 import { StatCardComponent } from '../../shared/stat-card.component';
+import { MonthNamePipe } from '../../shared/month-name.pipe';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, MatIconModule, MatButtonModule, MatProgressBarModule, PageHeaderComponent, StatCardComponent, BarChartComponent, EmptyStateComponent, PkrPipe],
+  imports: [RouterLink, MatIconModule, MatButtonModule, MatProgressBarModule, PageHeaderComponent, StatCardComponent, BarChartComponent, EmptyStateComponent, PkrPipe, MonthNamePipe],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
@@ -48,6 +49,14 @@ export class DashboardComponent {
   readonly spent = computed(() => this.expenses().reduce((s, e) => s + e.amount, 0));
   readonly current = computed(() => this.summaries().find((s) => s.month === this.month && s.year === this.year) ?? null);
   readonly paidCount = computed(() => new Set(this.funds().map((f) => f.residentId)).size);
+  readonly previous = computed(() => {
+    const m = this.month === 1 ? 12 : this.month - 1;
+    const y = this.month === 1 ? this.year - 1 : this.year;
+    return this.summaries().find((s) => s.month === m && s.year === y) ?? null;
+  });
+  /** "+8% vs Oct" style hint, or null when there is nothing to compare against. */
+  readonly collectedDelta = computed(() => delta(this.collected(), this.previous()?.totalFund, this.previous()?.month));
+  readonly spentDelta = computed(() => delta(this.spent(), this.previous()?.expense, this.previous()?.month));
 
   /** Last 12 summaries, oldest first, for the chart. */
   readonly last12 = computed(() =>
@@ -55,8 +64,8 @@ export class DashboardComponent {
   );
   readonly chartLabels = computed(() => this.last12().map((s) => `${monthName(s.month, true)} ${String(s.year).slice(2)}`));
   readonly chartSeries = computed<BarSeries[]>(() => [
-    { name: 'Collected', color: '#0b57d0', values: this.last12().map((s) => s.totalFund) },
-    { name: 'Spent', color: '#b3261e', values: this.last12().map((s) => s.expense) },
+    { name: 'Collected', color: 'var(--chart-1)', values: this.last12().map((s) => s.totalFund) },
+    { name: 'Spent', color: 'var(--chart-2)', values: this.last12().map((s) => s.expense) },
   ]);
 
   readonly recentExpenses = computed(() =>
@@ -101,4 +110,11 @@ export class DashboardComponent {
       },
     });
   }
+}
+
+function delta(current: number, previous: number | undefined, prevMonth: number | undefined): string | null {
+  if (!previous || prevMonth == null) return null;
+  const pct = Math.round(((current - previous) / previous) * 100);
+  const sign = pct > 0 ? '+' : '';
+  return `${sign}${pct}% vs ${monthName(prevMonth, true)}`;
 }

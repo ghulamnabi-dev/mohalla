@@ -37,9 +37,9 @@ export class SummaryComponent {
   readonly last12 = computed(() => this.sorted().slice(-12));
   readonly labels = computed(() => this.last12().map((s) => `${monthName(s.month, true)} ${String(s.year).slice(2)}`));
   readonly series = computed<BarSeries[]>(() => [
-    { name: 'Collected', color: '#0b57d0', values: this.last12().map((s) => s.totalFund) },
-    { name: 'Spent', color: '#b3261e', values: this.last12().map((s) => s.expense) },
-    { name: 'Closing balance', color: '#2e7d32', values: this.last12().map((s) => Math.max(s.closingBalance, 0)) },
+    { name: 'Collected', color: 'var(--chart-1)', values: this.last12().map((s) => s.totalFund) },
+    { name: 'Spent', color: 'var(--chart-2)', values: this.last12().map((s) => s.expense) },
+    { name: 'Closing balance', color: 'var(--chart-3)', values: this.last12().map((s) => Math.max(s.closingBalance, 0)) },
   ]);
 
   @ViewChild(MatSort) set sort(s: MatSort) { this.data.sort = s; }

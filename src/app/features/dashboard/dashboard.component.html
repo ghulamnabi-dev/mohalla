@@ -10,9 +10,9 @@
     <app-stat-card icon="groups" label="Residents" [value]="'' + residents().length"
       [hint]="paidCount() + ' paid this month'" link="../residents" tone="primary" />
     <app-stat-card icon="payments" label="Collected this month" [value]="collected() | pkr"
-      [hint]="outstanding() ? (outstanding() | pkr) + ' outstanding' : 'Nothing outstanding'" link="../funds" tone="positive" />
+      [hint]="outstanding() ? (outstanding() | pkr) + ' outstanding' : (collectedDelta() ?? 'Nothing outstanding')" link="../funds" tone="positive" />
     <app-stat-card icon="receipt_long" label="Spent this month" [value]="spent() | pkr"
-      [hint]="expenses().length + ' expense' + (expenses().length === 1 ? '' : 's')" link="../expenses" tone="negative" />
+      [hint]="spentDelta() ?? (expenses().length + ' expense' + (expenses().length === 1 ? '' : 's'))" link="../expenses" tone="negative" />
     <app-stat-card icon="account_balance" label="Closing balance" [value]="(current()?.closingBalance ?? null) | pkr"
       [hint]="current() ? 'Opened at ' + ((current()!.openningBalance) | pkr) : 'No ledger row for this month yet'" link="../summary" tone="neutral" />
   </section>
@@ -43,7 +43,7 @@
             <li>
               <div>
                 <strong>{{ f.residentName }}</strong>
-                <span class="muted">{{ f.paidTo }} · day {{ f.datePaid }}</span>
+                <span class="muted">Paid {{ f.datePaid }} {{ f.month | monthName: true }} · {{ f.paidTo }}</span>
               </div>
               <div class="amount">
                 <span class="mono">{{ f.paidAmount | pkr }}</span>
@@ -68,7 +68,7 @@
             <li>
               <div>
                 <strong>{{ e.description }}</strong>
-                <span class="muted">{{ e.categoryName }} · day {{ e.expenseDate }}</span>
+                <span class="muted">{{ e.categoryName }} · {{ e.expenseDate }} {{ e.month | monthName: true }}</span>
               </div>
               <span class="mono">{{ e.amount | pkr }}</span>
             </li>

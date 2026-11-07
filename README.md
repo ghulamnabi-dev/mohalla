@@ -63,6 +63,10 @@ Point the client at a different API by editing `src/environments/environment.dev
 Start the API with Docker from the server repo: `docker compose up --build` (see its README), or run it with the .NET SDK.
 
 ```bash
+npm run seed         # demo data: 13 residents, 12 months of payments/expenses, ledger rows; creates demo@sms.local
+```
+
+```bash
 npm test             # Karma + Jasmine, headless Chrome
 npm run build:prod   # outputs dist/sms/browser — deploy as static files (Vercel, Netlify, GitHub Pages, nginx)
 ```

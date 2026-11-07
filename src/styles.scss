@@ -5,7 +5,10 @@
 // ---------------------------------------------------------------------------
 html {
   color-scheme: light;
-  &.dark { color-scheme: dark; }
+  --chart-1: #3b6fd6;  // collected
+  --chart-2: #d9736a;  // spent
+  --chart-3: #3f9d6f;  // balance
+  &.dark { color-scheme: dark; --chart-1: #8ab4f8; --chart-2: #f28b82; --chart-3: #81c995; }
 
   @include mat.theme((
     color: (
@@ -66,21 +69,43 @@ html.dark .card { background: var(--mat-sys-surface-container-low); }
 // Data tables
 .data-table {
   width: 100%;
-  th.mat-mdc-header-cell { font: var(--mat-sys-label-large); color: var(--mat-sys-on-surface-variant); white-space: nowrap; }
+  --mat-table-row-item-outline-color: color-mix(in srgb, var(--mat-sys-outline-variant) 70%, transparent);
+  --mat-table-header-container-height: 48px;
+  --mat-table-row-item-container-height: 52px;
+  th.mat-mdc-header-cell {
+    font: var(--mat-sys-label-medium); font-weight: 600; letter-spacing: .02em; text-transform: uppercase;
+    color: var(--mat-sys-on-surface-variant); white-space: nowrap;
+    background: var(--mat-sys-surface-container-low);
+  }
   td.mat-mdc-cell { font-variant-numeric: tabular-nums; }
   .num { text-align: right; }
+  th.num .mat-sort-header-container { justify-content: flex-end; }
+  th.num .mat-sort-header-content { text-align: right; }
   .actions-col { width: 96px; text-align: right; white-space: nowrap; }
-  tr.mat-mdc-row:hover { background: var(--mat-sys-surface-container); }
+  td.actions-col .mat-mdc-icon-button { opacity: .55; transition: opacity .15s; }
+  tr.mat-mdc-row:hover { background: var(--mat-sys-surface-container); td.actions-col .mat-mdc-icon-button { opacity: 1; } }
+  .cell-primary { font-weight: 600; }
+  .cell-secondary { color: var(--mat-sys-on-surface-variant); font: var(--mat-sys-body-small); }
+  .cell-stack { display: grid; gap: 1px; line-height: 1.25; }
 }
 .table-scroll { overflow-x: auto; }
+
+// Inline figures in toolbars ("Collected  Rs 551,000")
+.stat-strip { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+.stat-strip .stat { display: grid; gap: 0; text-align: right; }
+.stat-strip .k { font: var(--mat-sys-label-small); text-transform: uppercase; letter-spacing: .04em; color: var(--mat-sys-on-surface-variant); }
+.stat-strip .v { font: var(--mat-sys-title-medium); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.stat-strip .v.due { color: var(--mat-sys-error); }
+.stat-strip .v.ok { color: #2e7d32; }
+html.dark .stat-strip .v.ok { color: #81c784; }
 
 .muted { color: var(--mat-sys-on-surface-variant); }
 .mono { font-variant-numeric: tabular-nums; }
 
 // Status chips
 .chip {
-  display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 999px;
-  font: var(--mat-sys-label-medium);
+  display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 999px; white-space: nowrap;
+  font: var(--mat-sys-label-medium); background: var(--mat-sys-surface-container-high); color: var(--mat-sys-on-surface-variant);
   &.ok { background: color-mix(in srgb, #2e7d32 16%, transparent); color: #1b5e20; }
   &.due { background: var(--mat-sys-error-container); color: var(--mat-sys-on-error-container); }
 }

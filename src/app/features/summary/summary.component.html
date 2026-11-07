@@ -21,7 +21,7 @@
         <table mat-table [dataSource]="data" matSort matSortActive="period" matSortDirection="desc" class="data-table">
           <ng-container matColumnDef="period">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Month</th>
-            <td mat-cell *matCellDef="let s"><strong>{{ s.month | monthName }} {{ s.year }}</strong></td>
+            <td mat-cell *matCellDef="let s"><span class="cell-primary">{{ s.month | monthName }}&nbsp;{{ s.year }}</span></td>
           </ng-container>
           <ng-container matColumnDef="openningBalance">
             <th mat-header-cell *matHeaderCellDef mat-sort-header class="num">Opening</th>

@@ -23,7 +23,9 @@ export class AuthService {
   readonly userName = computed(() => {
     const p = this.tokens.payload();
     const name = (p?.[NAME_CLAIM] ?? p?.['name'] ?? p?.['unique_name']) as string | undefined;
-    return name ?? 'Account';
+    if (!name) return 'Account';
+    // Show "ghulamnabi.dev" rather than the full address in the toolbar.
+    return name.includes('@') ? name.split('@')[0] : name;
   });
 
   login(body: LoginRequest): Observable<AuthResponse> {

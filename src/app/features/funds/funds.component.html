@@ -25,9 +25,9 @@
         </mat-select>
       </mat-form-field>
       <span class="spacer"></span>
-      <div class="totals">
-        <span class="muted">Collected</span> <strong class="mono">{{ totalPaid() | pkr }}</strong>
-        @if (totalDue()) { <span class="chip due">{{ totalDue() | pkr }} outstanding</span> }
+      <div class="stat-strip">
+        <div class="stat"><span class="k">Collected</span><span class="v ok">{{ totalPaid() | pkr }}</span></div>
+        <div class="stat"><span class="k">Outstanding</span><span class="v" [class.due]="totalDue() > 0">{{ totalDue() | pkr }}</span></div>
       </div>
     </div>
     @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
@@ -41,11 +41,11 @@
         <table mat-table [dataSource]="data" matSort matSortActive="period" matSortDirection="desc" class="data-table">
           <ng-container matColumnDef="residentName">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Resident</th>
-            <td mat-cell *matCellDef="let r"><strong>{{ r.residentName }}</strong> <span class="muted">· H-{{ r.houseNumber }}</span></td>
+            <td mat-cell *matCellDef="let r"><div class="cell-stack"><span class="cell-primary">{{ r.residentName }}</span><span class="cell-secondary">House {{ r.houseNumber }}</span></div></td>
           </ng-container>
           <ng-container matColumnDef="period">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Period</th>
-            <td mat-cell *matCellDef="let r">{{ r.month | monthName: true }} {{ r.year }} <span class="muted">· day {{ r.datePaid }}</span></td>
+            <td mat-cell *matCellDef="let r"><div class="cell-stack"><span>{{ r.month | monthName }} {{ r.year }}</span><span class="cell-secondary">Paid {{ r.datePaid }} {{ r.month | monthName: true }}</span></div></td>
           </ng-container>
           <ng-container matColumnDef="paidTo">
             <th mat-header-cell *matHeaderCellDef>Paid to</th>
