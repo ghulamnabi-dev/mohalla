@@ -1,7 +1,7 @@
 <div class="page">
   <app-page-header title="Expenses" subtitle="Society spending by category">
     <button mat-stroked-button (click)="manageCategories()">Categories</button>
-    <button mat-flat-button (click)="open()">Add expense</button>
+    <button *appAdminOnly mat-flat-button (click)="open()">Add expense</button>
   </app-page-header>
 
   <div class="panel">
@@ -33,8 +33,8 @@
     @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
 
     @if (!loading() && all().length === 0) {
-      <app-empty-state icon="receipt_long" title="No expenses yet" message="Set up a few categories, then add the first expense.">
-        <button mat-stroked-button (click)="open()">Add expense</button>
+      <app-empty-state icon="receipt_long" title="No expenses yet" [message]="auth.isAdmin() ? 'Set up a few categories, then add the first expense.' : 'Society spending appears here once it is recorded.'">
+        <button *appAdminOnly mat-stroked-button (click)="open()">Add expense</button>
       </app-empty-state>
     } @else {
       <div class="table-scroll">
@@ -62,9 +62,9 @@
               <button mat-icon-button (click)="remove(r)" matTooltip="Delete" aria-label="Delete"><mat-icon>delete</mat-icon></button>
             </td>
           </ng-container>
-          <tr mat-header-row *matHeaderRowDef="columns"></tr>
-          <tr mat-row *matRowDef="let row; columns: columns"></tr>
-          <tr class="mat-row empty-row" *matNoDataRow><td class="mat-cell" [attr.colspan]="columns.length">No expenses match these filters.</td></tr>
+          <tr mat-header-row *matHeaderRowDef="columns()"></tr>
+          <tr mat-row *matRowDef="let row; columns: columns()"></tr>
+          <tr class="mat-row empty-row" *matNoDataRow><td class="mat-cell" [attr.colspan]="columns().length">No expenses match these filters.</td></tr>
         </table>
       </div>
       <mat-paginator [pageSizeOptions]="[10, 25, 50]" pageSize="10" showFirstLastButtons />

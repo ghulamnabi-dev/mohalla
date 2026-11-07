@@ -1,6 +1,6 @@
 <div class="page">
   <app-page-header title="Contributions" subtitle="Monthly maintenance payments from residents">
-    <button mat-flat-button (click)="open()">Record payment</button>
+    <button *appAdminOnly mat-flat-button (click)="open()">Record payment</button>
   </app-page-header>
 
   <div class="panel">
@@ -32,8 +32,8 @@
     @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
 
     @if (!loading() && all().length === 0) {
-      <app-empty-state icon="payments" title="No payments recorded" message="Record the first contribution to start the ledger.">
-        <button mat-stroked-button (click)="open()">Record payment</button>
+      <app-empty-state icon="payments" title="No payments recorded" [message]="auth.isAdmin() ? 'Record the first contribution to start the ledger.' : 'Contributions appear here once they are recorded.'">
+        <button *appAdminOnly mat-stroked-button (click)="open()">Record payment</button>
       </app-empty-state>
     } @else {
       <div class="table-scroll">
@@ -71,9 +71,9 @@
               <button mat-icon-button (click)="remove(r)" matTooltip="Delete" aria-label="Delete"><mat-icon>delete</mat-icon></button>
             </td>
           </ng-container>
-          <tr mat-header-row *matHeaderRowDef="columns"></tr>
-          <tr mat-row *matRowDef="let row; columns: columns"></tr>
-          <tr class="mat-row empty-row" *matNoDataRow><td class="mat-cell" [attr.colspan]="columns.length">No payments match these filters.</td></tr>
+          <tr mat-header-row *matHeaderRowDef="columns()"></tr>
+          <tr mat-row *matRowDef="let row; columns: columns()"></tr>
+          <tr class="mat-row empty-row" *matNoDataRow><td class="mat-cell" [attr.colspan]="columns().length">No payments match these filters.</td></tr>
         </table>
       </div>
       <mat-paginator [pageSizeOptions]="[10, 25, 50]" pageSize="10" showFirstLastButtons />

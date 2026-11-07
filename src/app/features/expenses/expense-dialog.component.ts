@@ -11,6 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { ExpensesService } from '../../core/api/expenses.service';
 import { Expense, ExpenseCategory, toDate } from '../../core/models';
 import { NotificationService } from '../../core/notification.service';
+import { applyServerErrors } from '../../core/problem-details';
 
 export interface ExpenseDialogData {
   expense: Expense | null;
@@ -28,7 +29,8 @@ export interface ExpenseDialogData {
         <mat-form-field>
           <mat-label>Description</mat-label>
           <input matInput formControlName="description" placeholder="e.g. Generator fuel" />
-          @if (form.controls.description.invalid) { <mat-error>At least 3 characters.</mat-error> }
+          @if (form.controls.description.hasError('server')) { <mat-error>{{ form.controls.description.getError('server') }}</mat-error> }
+          @else if (form.controls.description.invalid) { <mat-error>At least 3 characters.</mat-error> }
         </mat-form-field>
         <div class="row">
           <mat-form-field>
@@ -37,13 +39,15 @@ export interface ExpenseDialogData {
               @for (c of data.categories; track c.id) { <mat-option [value]="c.id">{{ c.name }}</mat-option> }
             </mat-select>
             @if (!data.categories.length) { <mat-hint>No categories yet — add one from the Categories button.</mat-hint> }
-            @if (form.controls.categoryId.invalid) { <mat-error>Choose a category.</mat-error> }
+            @if (form.controls.categoryId.hasError('server')) { <mat-error>{{ form.controls.categoryId.getError('server') }}</mat-error> }
+            @else if (form.controls.categoryId.invalid) { <mat-error>Choose a category.</mat-error> }
           </mat-form-field>
           <mat-form-field floatLabel="always">
             <mat-label>Amount</mat-label>
             <input matInput type="number" formControlName="amount" min="1" inputmode="numeric" />
             <span matTextPrefix>Rs&nbsp;</span>
-            @if (form.controls.amount.invalid) { <mat-error>Enter an amount above 0.</mat-error> }
+            @if (form.controls.amount.hasError('server')) { <mat-error>{{ form.controls.amount.getError('server') }}</mat-error> }
+            @else if (form.controls.amount.invalid) { <mat-error>Enter an amount above 0.</mat-error> }
           </mat-form-field>
         </div>
         <mat-form-field>
@@ -51,7 +55,8 @@ export interface ExpenseDialogData {
           <input matInput [matDatepicker]="dp" formControlName="date" />
           <mat-datepicker-toggle matIconSuffix [for]="dp" />
           <mat-datepicker #dp />
-          @if (form.controls.date.invalid) { <mat-error>Required.</mat-error> }
+          @if (form.controls.date.hasError('server')) { <mat-error>{{ form.controls.date.getError('server') }}</mat-error> }
+          @else if (form.controls.date.invalid) { <mat-error>Required.</mat-error> }
         </mat-form-field>
       </mat-dialog-content>
       <mat-dialog-actions align="end">
@@ -97,7 +102,9 @@ export class ExpenseDialogComponent {
       next: () => this.ref.close(true),
       error: (err) => {
         this.saving.set(false);
-        this.notify.error(err);
+        const { handled, unmapped } = applyServerErrors(this.form, err, { month: 'date', year: 'date', expenseDate: 'date' });
+        if (!handled) this.notify.error(err);
+        else if (unmapped.length) this.notify.error(unmapped[0]);
       },
     });
   }

@@ -9,6 +9,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CategoriesService } from '../../core/api/categories.service';
+import { AdminOnlyDirective } from '../../core/auth/admin-only.directive';
 import { ExpenseCategory } from '../../core/models';
 import { NotificationService } from '../../core/notification.service';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog.component';
@@ -16,11 +17,11 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog.component';
 /** Inline add / rename / delete of expense categories. Every change is persisted immediately. */
 @Component({
   selector: 'app-categories-dialog',
-  imports: [ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatListModule, MatProgressBarModule, MatTooltipModule],
+  imports: [ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatListModule, MatProgressBarModule, MatTooltipModule, AdminOnlyDirective],
   template: `
     <h2 mat-dialog-title>Expense categories</h2>
     <mat-dialog-content class="content">
-      <form class="add" (ngSubmit)="add()">
+      <form *appAdminOnly class="add" (ngSubmit)="add()">
         <mat-form-field subscriptSizing="dynamic">
           <mat-label>New category</mat-label>
           <input matInput [formControl]="newName" placeholder="e.g. Security, Water, Generator" />
@@ -40,7 +41,7 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog.component';
             } @else {
               <div class="cat-row">
                 <span>{{ c.name }}</span>
-                <span class="row-actions">
+                <span *appAdminOnly class="row-actions">
                   <button mat-icon-button (click)="startEdit(c)" matTooltip="Rename" aria-label="Rename"><mat-icon>edit</mat-icon></button>
                   <button mat-icon-button (click)="remove(c)" matTooltip="Delete" aria-label="Delete"><mat-icon>delete</mat-icon></button>
                 </span>

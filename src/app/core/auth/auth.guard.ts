@@ -15,3 +15,10 @@ export const guestGuard: CanActivateFn = () => {
   const router = inject(Router);
   return auth.isAuthenticated() ? router.createUrlTree(['/app']) : true;
 };
+
+/** Admin-only pages; everyone else goes back to the dashboard. */
+export const adminGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+  return auth.isAdmin() ? true : router.createUrlTree(['/app']);
+};

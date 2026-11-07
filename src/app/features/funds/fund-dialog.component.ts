@@ -12,6 +12,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { FundsService } from '../../core/api/funds.service';
 import { Fund, Resident, toDate } from '../../core/models';
 import { NotificationService } from '../../core/notification.service';
+import { applyServerErrors } from '../../core/problem-details';
 import { PkrPipe } from '../../shared/pkr.pipe';
 
 export interface FundDialogData {
@@ -34,7 +35,8 @@ export interface FundDialogData {
               <mat-option [value]="r.id">{{ r.ownerName }} — H-{{ r.houseNumber }}, {{ r.street }}</mat-option>
             }
           </mat-select>
-          @if (form.controls.residentId.invalid) { <mat-error>Choose a resident.</mat-error> }
+          @if (form.controls.residentId.hasError('server')) { <mat-error>{{ form.controls.residentId.getError('server') }}</mat-error> }
+          @else if (form.controls.residentId.invalid) { <mat-error>Choose a resident.</mat-error> }
         </mat-form-field>
 
         <div class="row">
@@ -43,12 +45,14 @@ export interface FundDialogData {
             <input matInput [matDatepicker]="dp" formControlName="date" />
             <mat-datepicker-toggle matIconSuffix [for]="dp" />
             <mat-datepicker #dp />
-            @if (form.controls.date.invalid) { <mat-error>Required.</mat-error> }
+            @if (form.controls.date.hasError('server')) { <mat-error>{{ form.controls.date.getError('server') }}</mat-error> }
+            @else if (form.controls.date.invalid) { <mat-error>Required.</mat-error> }
           </mat-form-field>
           <mat-form-field>
             <mat-label>Paid to</mat-label>
             <input matInput formControlName="paidTo" placeholder="e.g. Treasurer" />
-            @if (form.controls.paidTo.invalid) { <mat-error>Required.</mat-error> }
+            @if (form.controls.paidTo.hasError('server')) { <mat-error>{{ form.controls.paidTo.getError('server') }}</mat-error> }
+            @else if (form.controls.paidTo.invalid) { <mat-error>Required.</mat-error> }
           </mat-form-field>
         </div>
 
@@ -57,13 +61,15 @@ export interface FundDialogData {
             <mat-label>Amount due</mat-label>
             <input matInput type="number" formControlName="amount" min="1" inputmode="numeric" />
             <span matTextPrefix>Rs&nbsp;</span>
-            @if (form.controls.amount.invalid) { <mat-error>Enter an amount above 0.</mat-error> }
+            @if (form.controls.amount.hasError('server')) { <mat-error>{{ form.controls.amount.getError('server') }}</mat-error> }
+            @else if (form.controls.amount.invalid) { <mat-error>Enter an amount above 0.</mat-error> }
           </mat-form-field>
           <mat-form-field floatLabel="always">
             <mat-label>Amount paid</mat-label>
             <input matInput type="number" formControlName="paidAmount" min="0" inputmode="numeric" />
             <span matTextPrefix>Rs&nbsp;</span>
-            @if (form.controls.paidAmount.hasError('required') || form.controls.paidAmount.hasError('min')) { <mat-error>Enter 0 or more.</mat-error> }
+            @if (form.controls.paidAmount.hasError('server')) { <mat-error>{{ form.controls.paidAmount.getError('server') }}</mat-error> }
+            @else if (form.controls.paidAmount.hasError('required') || form.controls.paidAmount.hasError('min')) { <mat-error>Enter 0 or more.</mat-error> }
             @else if (form.hasError('overpaid')) { <mat-error>Cannot exceed the amount due.</mat-error> }
           </mat-form-field>
         </div>
@@ -88,7 +94,7 @@ export class FundDialogComponent {
   readonly saving = signal(false);
   readonly form = inject(FormBuilder).nonNullable.group(
     {
-      residentId: [this.data.fund?.residentId ?? (null as number | null), Validators.required],
+      residentId: [this.data.fund?.residentId ?? (this.data.residents.length === 1 ? this.data.residents[0].id : (null as number | null)), Validators.required],
       date: [this.data.fund ? toDate(this.data.fund.year, this.data.fund.month, this.data.fund.datePaid) : new Date(), Validators.required],
       paidTo: [this.data.fund?.paidTo ?? '', [Validators.required, Validators.minLength(2)]],
       amount: [this.data.fund?.amount ?? (null as number | null), [Validators.required, Validators.min(1)]],
@@ -124,7 +130,9 @@ export class FundDialogComponent {
       next: () => this.ref.close(true),
       error: (err) => {
         this.saving.set(false);
-        this.notify.error(err);
+        const { handled, unmapped } = applyServerErrors(this.form, err, { month: 'date', year: 'date', datePaid: 'date', outstanding: 'paidAmount' });
+        if (!handled) this.notify.error(err);
+        else if (unmapped.length) this.notify.error(unmapped[0]);
       },
     });
   }

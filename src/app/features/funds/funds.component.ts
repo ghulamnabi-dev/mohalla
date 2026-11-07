@@ -13,6 +13,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { FundsService } from '../../core/api/funds.service';
+import { AdminOnlyDirective } from '../../core/auth/admin-only.directive';
+import { AuthService } from '../../core/auth/auth.service';
 import { ResidentsService } from '../../core/api/residents.service';
 import { Fund, FundRow, MONTHS, Resident } from '../../core/models';
 import { NotificationService } from '../../core/notification.service';
@@ -27,7 +29,7 @@ import { FundDialogComponent } from './fund-dialog.component';
   selector: 'app-funds',
   imports: [
     MatTableModule, MatSortModule, MatPaginatorModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule,
-    MatDialogModule, MatProgressBarModule, MatTooltipModule, PageHeaderComponent, EmptyStateComponent, PkrPipe, MonthNamePipe,
+    MatDialogModule, MatProgressBarModule, MatTooltipModule, PageHeaderComponent, EmptyStateComponent, PkrPipe, MonthNamePipe, AdminOnlyDirective,
   ],
   templateUrl: './funds.component.html',
 })
@@ -36,9 +38,10 @@ export class FundsComponent {
   private readonly residentsApi = inject(ResidentsService);
   private readonly dialog = inject(MatDialog);
   private readonly notify = inject(NotificationService);
+  readonly auth = inject(AuthService);
 
   readonly months = MONTHS;
-  readonly columns = ['residentName', 'period', 'paidTo', 'amount', 'paidAmount', 'outstanding', 'actions'];
+  readonly columns = computed(() => ['residentName', 'period', 'paidTo', 'amount', 'paidAmount', 'outstanding', ...(this.auth.isAdmin() ? ['actions'] : [])]);
   readonly data = new MatTableDataSource<FundRow>([]);
   readonly loading = signal(true);
   readonly residents = signal<Resident[]>([]);
@@ -61,7 +64,7 @@ export class FundsComponent {
     this.data.filterPredicate = (r, q) => [r.residentName, r.houseNumber, r.paidTo].join(' ').toLowerCase().includes(q);
     this.data.sortingDataAccessor = (r, col) => (col === 'period' ? r.year * 100 + r.month : (r as unknown as Record<string, string | number>)[col]);
     this.load();
-    if (inject(ActivatedRoute).snapshot.queryParamMap.has('add')) queueMicrotask(() => this.open());
+    if (inject(ActivatedRoute).snapshot.queryParamMap.has('add') && this.auth.isAdmin()) queueMicrotask(() => this.open());
   }
 
   load(): void {

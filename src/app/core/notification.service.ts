@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpErrorResponse } from '@angular/common/http';
+import { firstValidationMessage, validationProblem } from './problem-details';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
@@ -17,6 +18,14 @@ export class NotificationService {
 
   private describe(err: HttpErrorResponse): string {
     if (err.status === 0) return 'Cannot reach the API. Is the server running?';
+    if (err.status === 403) return 'You have read-only access.';
+    const problem = validationProblem(err);
+    if (problem) {
+      const first = firstValidationMessage(problem);
+      const title = problem.title?.trim();
+      if (title && first) return `${title}${/[.!?:]$/.test(title) ? ' ' : ': '}${first}`;
+      return first ?? title ?? 'Please check the form and try again.';
+    }
     if (typeof err.error === 'string' && err.error.length < 200) return err.error;
     if (err.error?.title) return err.error.title;
     if (err.status === 401) return 'Your session has expired. Please sign in again.';

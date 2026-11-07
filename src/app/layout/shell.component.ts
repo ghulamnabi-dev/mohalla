@@ -18,6 +18,7 @@ interface NavItem {
   label: string;
   icon: string;
   path: string;
+  adminOnly?: boolean;
 }
 
 @Component({
@@ -34,13 +35,15 @@ export class ShellComponent {
   private readonly auth = inject(AuthService);
   readonly theme = inject(ThemeService);
 
-  readonly nav: NavItem[] = [
+  private readonly allNav: NavItem[] = [
     { label: 'Dashboard', icon: 'space_dashboard', path: 'dashboard' },
     { label: 'Residents', icon: 'groups', path: 'residents' },
     { label: 'Contributions', icon: 'payments', path: 'funds' },
     { label: 'Expenses', icon: 'receipt_long', path: 'expenses' },
     { label: 'Monthly ledger', icon: 'account_balance', path: 'summary' },
+    { label: 'Users', icon: 'manage_accounts', path: 'users', adminOnly: true },
   ];
+  readonly nav = computed(() => this.allNav.filter((item) => !item.adminOnly || this.isAdmin()));
 
   readonly isHandset = toSignal(
     inject(BreakpointObserver).observe('(max-width: 900px)').pipe(map((r) => r.matches)),
@@ -49,6 +52,7 @@ export class ShellComponent {
   readonly mode = computed(() => (this.isHandset() ? 'over' : 'side'));
   readonly userName = this.auth.userName;
   readonly userEmail = this.auth.userEmail;
+  readonly isAdmin = this.auth.isAdmin;
   readonly initials = computed(() =>
     this.userName()
       .split(/[\s@._-]+/)

@@ -1,6 +1,6 @@
 <div class="page">
   <app-page-header title="Residents" [subtitle]="count() + ' household' + (count() === 1 ? '' : 's')">
-    <button mat-flat-button (click)="open()">Add resident</button>
+    <button *appAdminOnly mat-flat-button (click)="open()">Add resident</button>
   </app-page-header>
 
   <div class="panel">
@@ -14,15 +14,15 @@
     @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
 
     @if (!loading() && count() === 0) {
-      <app-empty-state icon="groups" title="No residents yet" message="Add the first household to start recording contributions.">
-        <button mat-stroked-button (click)="open()">Add resident</button>
+      <app-empty-state icon="groups" title="No residents yet" [message]="auth.isAdmin() ? 'Add the first household to start recording contributions.' : 'No households have been added yet.'">
+        <button *appAdminOnly mat-stroked-button (click)="open()">Add resident</button>
       </app-empty-state>
     } @else {
       <div class="table-scroll">
         <table mat-table [dataSource]="data" matSort class="data-table">
           <ng-container matColumnDef="ownerName">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Owner</th>
-            <td mat-cell *matCellDef="let r"><span class="cell-primary">{{ r.ownerName }}</span></td>
+            <td mat-cell *matCellDef="let r"><a class="cell-primary cell-link" [routerLink]="[r.id]">{{ r.ownerName }}</a></td>
           </ng-container>
           <ng-container matColumnDef="houseNumber">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>House</th>
@@ -43,9 +43,9 @@
               <button mat-icon-button (click)="remove(r)" matTooltip="Delete" aria-label="Delete"><mat-icon>delete</mat-icon></button>
             </td>
           </ng-container>
-          <tr mat-header-row *matHeaderRowDef="columns"></tr>
-          <tr mat-row *matRowDef="let row; columns: columns"></tr>
-          <tr class="mat-row empty-row" *matNoDataRow><td class="mat-cell" [attr.colspan]="columns.length">No residents match your search.</td></tr>
+          <tr mat-header-row *matHeaderRowDef="columns()"></tr>
+          <tr mat-row *matRowDef="let row; columns: columns()"></tr>
+          <tr class="mat-row empty-row" *matNoDataRow><td class="mat-cell" [attr.colspan]="columns().length">No residents match your search.</td></tr>
         </table>
       </div>
       <mat-paginator [pageSizeOptions]="[10, 25, 50]" pageSize="10" showFirstLastButtons />

@@ -12,6 +12,8 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { forkJoin } from 'rxjs';
 import { CategoriesService } from '../../core/api/categories.service';
+import { AdminOnlyDirective } from '../../core/auth/admin-only.directive';
+import { AuthService } from '../../core/auth/auth.service';
 import { ExpensesService } from '../../core/api/expenses.service';
 import { Expense, ExpenseCategory, ExpenseRow, MONTHS } from '../../core/models';
 import { NotificationService } from '../../core/notification.service';
@@ -27,7 +29,7 @@ import { ExpenseDialogComponent } from './expense-dialog.component';
   selector: 'app-expenses',
   imports: [
     MatTableModule, MatSortModule, MatPaginatorModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule,
-    MatDialogModule, MatProgressBarModule, MatTooltipModule, PageHeaderComponent, EmptyStateComponent, PkrPipe, MonthNamePipe,
+    MatDialogModule, MatProgressBarModule, MatTooltipModule, PageHeaderComponent, EmptyStateComponent, PkrPipe, MonthNamePipe, AdminOnlyDirective,
   ],
   templateUrl: './expenses.component.html',
 })
@@ -36,9 +38,10 @@ export class ExpensesComponent {
   private readonly categoriesApi = inject(CategoriesService);
   private readonly dialog = inject(MatDialog);
   private readonly notify = inject(NotificationService);
+  readonly auth = inject(AuthService);
 
   readonly months = MONTHS;
-  readonly columns = ['description', 'categoryName', 'period', 'amount', 'actions'];
+  readonly columns = computed(() => ['description', 'categoryName', 'period', 'amount', ...(this.auth.isAdmin() ? ['actions'] : [])]);
   readonly data = new MatTableDataSource<ExpenseRow>([]);
   readonly loading = signal(true);
   readonly categories = signal<ExpenseCategory[]>([]);

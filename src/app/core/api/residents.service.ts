@@ -1,12 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Resident } from '../models';
+import { Resident, ResidentStatement } from '../models';
 import { CrudApi } from './crud.base';
 
 @Injectable({ providedIn: 'root' })
 export class ResidentsService extends CrudApi<Resident> {
   constructor() {
     super('Resident');
+  }
+
+  /** Header, payment history (newest first) and totals for one household. */
+  statement(id: number): Observable<ResidentStatement> {
+    return this.http.get<ResidentStatement>(`${this.url}/${id}/statement`);
   }
 
   /** Look a resident up by name + house number (used before recording a payment). */

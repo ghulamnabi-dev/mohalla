@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { ResidentsService } from '../../core/api/residents.service';
 import { Resident } from '../../core/models';
 import { NotificationService } from '../../core/notification.service';
+import { applyServerErrors } from '../../core/problem-details';
 
 @Component({
   selector: 'app-resident-dialog',
@@ -19,25 +20,29 @@ import { NotificationService } from '../../core/notification.service';
         <mat-form-field>
           <mat-label>Owner name</mat-label>
           <input matInput formControlName="ownerName" autocomplete="off" />
-          @if (form.controls.ownerName.invalid) { <mat-error>Owner name is required.</mat-error> }
+          @if (form.controls.ownerName.hasError('server')) { <mat-error>{{ form.controls.ownerName.getError('server') }}</mat-error> }
+          @else if (form.controls.ownerName.invalid) { <mat-error>Owner name is required.</mat-error> }
         </mat-form-field>
         <div class="row">
           <mat-form-field>
             <mat-label>House number</mat-label>
             <input matInput formControlName="houseNumber" />
-            @if (form.controls.houseNumber.invalid) { <mat-error>Required.</mat-error> }
+            @if (form.controls.houseNumber.hasError('server')) { <mat-error>{{ form.controls.houseNumber.getError('server') }}</mat-error> }
+            @else if (form.controls.houseNumber.invalid) { <mat-error>Required.</mat-error> }
           </mat-form-field>
           <mat-form-field>
             <mat-label>Street</mat-label>
             <input matInput formControlName="street" />
-            @if (form.controls.street.invalid) { <mat-error>Required.</mat-error> }
+            @if (form.controls.street.hasError('server')) { <mat-error>{{ form.controls.street.getError('server') }}</mat-error> }
+            @else if (form.controls.street.invalid) { <mat-error>Required.</mat-error> }
           </mat-form-field>
         </div>
         <mat-form-field>
           <mat-label>Phone</mat-label>
           <input matInput formControlName="phoneNumber" inputmode="numeric" maxlength="11" placeholder="03XXXXXXXXX" />
           <mat-hint>11 digits</mat-hint>
-          @if (form.controls.phoneNumber.hasError('required')) { <mat-error>Phone is required.</mat-error> }
+          @if (form.controls.phoneNumber.hasError('server')) { <mat-error>{{ form.controls.phoneNumber.getError('server') }}</mat-error> }
+          @else if (form.controls.phoneNumber.hasError('required')) { <mat-error>Phone is required.</mat-error> }
           @else if (form.controls.phoneNumber.hasError('pattern')) { <mat-error>Enter exactly 11 digits.</mat-error> }
         </mat-form-field>
       </mat-dialog-content>
@@ -74,7 +79,9 @@ export class ResidentDialogComponent {
       next: () => this.ref.close(true),
       error: (err) => {
         this.saving.set(false);
-        this.notify.error(err);
+        const { handled, unmapped } = applyServerErrors(this.form, err);
+        if (!handled) this.notify.error(err);
+        else if (unmapped.length) this.notify.error(unmapped[0]);
       },
     });
   }

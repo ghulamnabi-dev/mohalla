@@ -1,4 +1,4 @@
-import { Component, ViewChild, effect, inject, signal } from '@angular/core';
+import { Component, ViewChild, computed, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,6 +9,9 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterLink } from '@angular/router';
+import { AdminOnlyDirective } from '../../core/auth/admin-only.directive';
+import { AuthService } from '../../core/auth/auth.service';
 import { ResidentsService } from '../../core/api/residents.service';
 import { Resident } from '../../core/models';
 import { NotificationService } from '../../core/notification.service';
@@ -21,7 +24,7 @@ import { ResidentDialogComponent } from './resident-dialog.component';
   selector: 'app-residents',
   imports: [
     MatTableModule, MatSortModule, MatPaginatorModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule,
-    MatDialogModule, MatProgressBarModule, MatTooltipModule, PageHeaderComponent, EmptyStateComponent,
+    MatDialogModule, MatProgressBarModule, MatTooltipModule, RouterLink, PageHeaderComponent, EmptyStateComponent, AdminOnlyDirective,
   ],
   templateUrl: './residents.component.html',
 })
@@ -29,8 +32,10 @@ export class ResidentsComponent {
   private readonly api = inject(ResidentsService);
   private readonly dialog = inject(MatDialog);
   private readonly notify = inject(NotificationService);
+  readonly auth = inject(AuthService);
 
-  readonly columns = ['ownerName', 'houseNumber', 'street', 'phoneNumber', 'actions'];
+  /** Viewers get no actions column at all. */
+  readonly columns = computed(() => ['ownerName', 'houseNumber', 'street', 'phoneNumber', ...(this.auth.isAdmin() ? ['actions'] : [])]);
   readonly data = new MatTableDataSource<Resident>([]);
   readonly loading = signal(true);
   readonly count = signal(0);

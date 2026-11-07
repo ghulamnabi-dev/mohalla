@@ -65,8 +65,32 @@ export interface RegisterRequest extends LoginRequest {
   confirmPassword: string;
 }
 
+export type Role = 'Admin' | 'Viewer';
+
 export interface AuthResponse {
   token: string;
+  email?: string;
+  fullName?: string;
+  role?: Role;
+}
+
+/** An account as returned by /Auth/me and /Auth/users. */
+export interface UserAccount {
+  id: string;
+  email: string;
+  fullName: string;
+  role: Role;
+}
+
+/** GET /Resident/{id}/statement — payments are newest first. */
+export interface ResidentStatement {
+  resident: Pick<Resident, 'id' | 'ownerName' | 'houseNumber' | 'street' | 'phoneNumber'>;
+  payments: Fund[];
+  totalDue: number;
+  totalPaid: number;
+  balance: number;
+  monthsPaid: number;
+  monthsShort: number;
 }
 
 export const MONTHS = [

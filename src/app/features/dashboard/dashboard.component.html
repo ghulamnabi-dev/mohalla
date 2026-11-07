@@ -1,7 +1,7 @@
 <div class="page">
   <app-page-header title="Dashboard" [subtitle]="monthLabel">
     <button mat-stroked-button (click)="load()" [disabled]="loading()">Refresh</button>
-    <a mat-flat-button routerLink="../funds" [queryParams]="{ add: 1 }">Record payment</a>
+    <a *appAdminOnly mat-flat-button routerLink="../funds" [queryParams]="{ add: 1 }">Record payment</a>
   </app-page-header>
 
   @if (loading()) { <mat-progress-bar mode="indeterminate" class="loader" /> }

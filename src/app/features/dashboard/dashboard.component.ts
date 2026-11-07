@@ -6,6 +6,7 @@ import { MatTableModule } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
 import { Observable, catchError, forkJoin, of } from 'rxjs';
 import { CategoriesService } from '../../core/api/categories.service';
+import { AdminOnlyDirective } from '../../core/auth/admin-only.directive';
 import { ExpensesService } from '../../core/api/expenses.service';
 import { FundsService } from '../../core/api/funds.service';
 import { ResidentsService } from '../../core/api/residents.service';
@@ -30,7 +31,7 @@ interface Activity {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, MatIconModule, MatButtonModule, MatProgressBarModule, MatTableModule, PageHeaderComponent, StatCardComponent, BarChartComponent, EmptyStateComponent, PkrPipe, MonthNamePipe],
+  imports: [RouterLink, MatIconModule, MatButtonModule, MatProgressBarModule, MatTableModule, PageHeaderComponent, StatCardComponent, BarChartComponent, EmptyStateComponent, PkrPipe, MonthNamePipe, AdminOnlyDirective],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
