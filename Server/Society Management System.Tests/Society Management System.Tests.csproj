@@ -18,6 +18,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="Xunit" />
+    <Using Include="FluentAssertions" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="../Society Management System/Society Management System.csproj" />
   </ItemGroup>
 
