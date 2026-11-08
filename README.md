@@ -50,6 +50,15 @@
 - **Auth** — JWT stored client-side, route guards (auth, guest, admin), bearer interceptor, automatic sign-out on 401, session-expiry check from the token's `exp`.
 - **UI** — a quiet admin aesthetic: one accent, flat surfaces, dense tables, tabular figures; light/dark theme persisted with no flash on load; responsive to 375 px; self-hosted Inter + Material Icons; reduced-motion support.
 
+## Engineering highlights
+
+- **Angular 19 the modern way** — standalone components, signals and `computed()` for all derived state, the new control flow, `inject()`, functional guards and interceptors, lazy routes.
+- **Role-aware UI from one primitive** — a structural `*appAdminOnly` directive driven by the JWT role claim hides every mutating control for viewers; the API enforces the same rule with 403s.
+- **Thin typed API layer** — a generic `CrudApi<T>` base per resource, so each service is a few lines and the HTTP surface is consistent.
+- **Server errors land where the user looks** — `ValidationProblemDetails` from the API is mapped onto the matching form controls instead of a generic toast.
+- **Design system as tokens** — Material 3 system variables plus a small custom token set (one accent, flat surfaces) give light and dark from the same stylesheet; no per-component colour.
+- **Tested logic** — 94 unit specs cover auth, guards, interceptor, API client, chart geometry and the dashboard / statement arithmetic.
+
 ## Stack & conventions
 
 | | |
