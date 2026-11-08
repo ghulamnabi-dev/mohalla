@@ -1,0 +1,47 @@
+<mat-sidenav-container class="shell">
+  <mat-sidenav #drawer class="sidenav" [mode]="mode()" [opened]="!isHandset()" [fixedInViewport]="isHandset()">
+    <a class="brand" routerLink="dashboard">
+      <span class="mark"><mat-icon>apartment</mat-icon></span>
+      <span class="brand-name">Mohalla<span class="brand-sub">Society finances</span></span>
+    </a>
+
+    <nav class="nav" aria-label="Main">
+      @for (item of nav(); track item.path) {
+        <a [routerLink]="item.path" routerLinkActive="active" (click)="isHandset() && drawer.close()">
+          <mat-icon>{{ item.icon }}</mat-icon>
+          <span>{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+
+    <div class="sidenav-foot">
+      <button class="account" [matMenuTriggerFor]="userMenu" aria-label="Account menu">
+        <span class="avatar">{{ initials() }}</span>
+        <span class="account-text">
+          <span class="account-name">{{ userName() }}</span>
+          <span class="account-role">{{ userEmail() ?? 'Signed in' }}</span>
+          <span class="account-role">{{ isAdmin() ? 'Admin' : 'Read-only' }}</span>
+        </span>
+        <mat-icon>unfold_more</mat-icon>
+      </button>
+      <mat-menu #userMenu="matMenu" yPosition="above">
+        <button mat-menu-item (click)="theme.toggle()"><mat-icon>{{ theme.dark() ? 'light_mode' : 'dark_mode' }}</mat-icon>{{ theme.dark() ? 'Light theme' : 'Dark theme' }}</button>
+        <a mat-menu-item href="https://github.com/gn-4200/mohalla-api" target="_blank" rel="noopener"><mat-icon>code</mat-icon>API on GitHub</a>
+        <mat-divider />
+        <button mat-menu-item (click)="logout()"><mat-icon>logout</mat-icon>Sign out</button>
+      </mat-menu>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    @if (isHandset()) {
+      <div class="mobile-bar">
+        <button mat-icon-button (click)="drawer.toggle()" aria-label="Open navigation"><mat-icon>menu</mat-icon></button>
+        <span class="mobile-title">Mohalla</span>
+      </div>
+    }
+    <main class="content">
+      <router-outlet />
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

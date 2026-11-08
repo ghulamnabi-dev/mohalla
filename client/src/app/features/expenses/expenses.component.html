@@ -1,0 +1,73 @@
+<div class="page">
+  <app-page-header title="Expenses" subtitle="Society spending by category">
+    <button mat-stroked-button (click)="manageCategories()">Categories</button>
+    <button *appAdminOnly mat-flat-button (click)="open()">Add expense</button>
+  </app-page-header>
+
+  <div class="panel">
+    <div class="toolbar">
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label>Search</mat-label>
+        <input matInput #q (input)="filter(q.value)" placeholder="Description or category" />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic" class="narrow">
+        <mat-label>Year</mat-label>
+        <mat-select [value]="year()" (valueChange)="year.set($event); apply()">
+          <mat-option value="all">All years</mat-option>
+          @for (y of years(); track y) { <mat-option [value]="y">{{ y }}</mat-option> }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic" style="width:190px">
+        <mat-label>Category</mat-label>
+        <mat-select [value]="category()" (valueChange)="category.set($event); apply()">
+          <mat-option value="all">All categories</mat-option>
+          @for (c of categories(); track c.id) { <mat-option [value]="c.id">{{ c.name }}</mat-option> }
+        </mat-select>
+      </mat-form-field>
+      <div class="figures">
+        <div class="figure"><span class="k">Total</span><span class="v">{{ total() | pkr }}</span></div>
+        <div class="figure"><span class="k">Entries</span><span class="v">{{ visible().length }}</span></div>
+      </div>
+    </div>
+    @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+
+    @if (!loading() && all().length === 0) {
+      <app-empty-state icon="receipt_long" title="No expenses yet" [message]="auth.isAdmin() ? 'Set up a few categories, then add the first expense.' : 'Society spending appears here once it is recorded.'">
+        <button *appAdminOnly mat-stroked-button (click)="open()">Add expense</button>
+      </app-empty-state>
+    } @else {
+      <div class="table-scroll">
+        <table mat-table [dataSource]="data" matSort matSortActive="period" matSortDirection="desc" class="data-table">
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+            <td mat-cell *matCellDef="let r"><span class="cell-primary">{{ r.description }}</span></td>
+          </ng-container>
+          <ng-container matColumnDef="categoryName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Category</th>
+            <td mat-cell *matCellDef="let r"><span class="tag">{{ r.categoryName }}</span></td>
+          </ng-container>
+          <ng-container matColumnDef="period">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+            <td mat-cell *matCellDef="let r">{{ r.expenseDate }}&nbsp;{{ r.month | monthName: true }}&nbsp;{{ r.year }}</td>
+          </ng-container>
+          <ng-container matColumnDef="amount">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="num">Amount</th>
+            <td mat-cell *matCellDef="let r" class="num">{{ r.amount | pkr }}</td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="actions-col"></th>
+            <td mat-cell *matCellDef="let r" class="actions-col">
+              <button mat-icon-button (click)="open(r)" matTooltip="Edit" aria-label="Edit"><mat-icon>edit</mat-icon></button>
+              <button mat-icon-button (click)="remove(r)" matTooltip="Delete" aria-label="Delete"><mat-icon>delete</mat-icon></button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="columns()"></tr>
+          <tr mat-row *matRowDef="let row; columns: columns()"></tr>
+          <tr class="mat-row empty-row" *matNoDataRow><td class="mat-cell" [attr.colspan]="columns().length">No expenses match these filters.</td></tr>
+        </table>
+      </div>
+      <mat-paginator [pageSizeOptions]="[10, 25, 50]" pageSize="10" showFirstLastButtons />
+    }
+  </div>
+</div>

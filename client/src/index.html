@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Mohalla — Society finances</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Mohalla: residents, monthly contributions, expenses and ledgers for a housing society.">
+  <meta name="theme-color" content="#0f6e56">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <script>
+    // Apply the saved theme before first paint to avoid a flash.
+    try { if (localStorage.getItem('mohalla.theme') === 'dark' || (!localStorage.getItem('mohalla.theme') && matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark'); } catch (e) {}
+  </script>
+</head>
+<body>
+  <app-root></app-root>
+</body>
+</html>

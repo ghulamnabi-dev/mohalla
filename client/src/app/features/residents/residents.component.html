@@ -1,0 +1,54 @@
+<div class="page">
+  <app-page-header title="Residents" [subtitle]="count() + ' household' + (count() === 1 ? '' : 's')">
+    <button *appAdminOnly mat-flat-button (click)="open()">Add resident</button>
+  </app-page-header>
+
+  <div class="panel">
+    <div class="toolbar">
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label>Search</mat-label>
+        <input matInput #q (input)="filter(q.value)" placeholder="Name, house, street or phone" />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+    @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+
+    @if (!loading() && count() === 0) {
+      <app-empty-state icon="groups" title="No residents yet" [message]="auth.isAdmin() ? 'Add the first household to start recording contributions.' : 'No households have been added yet.'">
+        <button *appAdminOnly mat-stroked-button (click)="open()">Add resident</button>
+      </app-empty-state>
+    } @else {
+      <div class="table-scroll">
+        <table mat-table [dataSource]="data" matSort class="data-table">
+          <ng-container matColumnDef="ownerName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Owner</th>
+            <td mat-cell *matCellDef="let r"><a class="cell-primary cell-link" [routerLink]="[r.id]">{{ r.ownerName }}</a></td>
+          </ng-container>
+          <ng-container matColumnDef="houseNumber">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>House</th>
+            <td mat-cell *matCellDef="let r">{{ r.houseNumber }}</td>
+          </ng-container>
+          <ng-container matColumnDef="street">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Street</th>
+            <td mat-cell *matCellDef="let r">{{ r.street }}</td>
+          </ng-container>
+          <ng-container matColumnDef="phoneNumber">
+            <th mat-header-cell *matHeaderCellDef>Phone</th>
+            <td mat-cell *matCellDef="let r"><a [href]="'tel:' + r.phoneNumber">{{ r.phoneNumber }}</a></td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="actions-col"></th>
+            <td mat-cell *matCellDef="let r" class="actions-col">
+              <button mat-icon-button (click)="open(r)" matTooltip="Edit" aria-label="Edit"><mat-icon>edit</mat-icon></button>
+              <button mat-icon-button (click)="remove(r)" matTooltip="Delete" aria-label="Delete"><mat-icon>delete</mat-icon></button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="columns()"></tr>
+          <tr mat-row *matRowDef="let row; columns: columns()"></tr>
+          <tr class="mat-row empty-row" *matNoDataRow><td class="mat-cell" [attr.colspan]="columns().length">No residents match your search.</td></tr>
+        </table>
+      </div>
+      <mat-paginator [pageSizeOptions]="[10, 25, 50]" pageSize="10" showFirstLastButtons />
+    }
+  </div>
+</div>

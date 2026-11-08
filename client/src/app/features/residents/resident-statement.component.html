@@ -1,0 +1,68 @@
+<div class="page statement">
+  <header class="print-head" aria-hidden="true">
+    <div>
+      <strong>Mohalla</strong>
+      <span>Society finances · Resident statement</span>
+    </div>
+    <span>Printed {{ printedOn | date: 'd MMMM y' }}</span>
+  </header>
+
+  <app-page-header [title]="title()" [subtitle]="subtitle()">
+    <button mat-stroked-button (click)="print()" [disabled]="!statement()">Print statement</button>
+    <button *appAdminOnly mat-flat-button (click)="recordPayment()" [disabled]="!statement()">Record payment</button>
+  </app-page-header>
+
+  @if (loading()) { <mat-progress-bar mode="indeterminate" class="loader" /> }
+
+  @if (statement(); as s) {
+    <section class="kpis">
+      <app-stat-card label="Total due" [value]="s.totalDue | pkr" [hint]="s.payments.length + ' month' + (s.payments.length === 1 ? '' : 's') + ' billed'" />
+      <app-stat-card label="Total paid" [value]="s.totalPaid | pkr" [hint]="paidHint()" />
+      <app-stat-card label="Balance" [value]="s.balance | pkr" [hint]="balanceHint()" [negative]="s.balance > 0" />
+      <app-stat-card label="Months paid / short" [value]="monthsValue()" [hint]="s.monthsShort ? 'Short months carry a balance' : 'No short months'" />
+    </section>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Payment history</h2>
+        <span class="sub">Newest first · running balance from the oldest payment</span>
+      </div>
+      @if (rows().length) {
+        <div class="table-scroll">
+          <table mat-table [dataSource]="rows()" class="data-table">
+            <ng-container matColumnDef="period">
+              <th mat-header-cell *matHeaderCellDef>Period</th>
+              <td mat-cell *matCellDef="let r"><div class="cell-stack"><span class="cell-primary">{{ r.month | monthName }} {{ r.year }}</span><span class="cell-secondary">Paid {{ r.datePaid }} {{ r.month | monthName: true }}</span></div></td>
+            </ng-container>
+            <ng-container matColumnDef="paidTo">
+              <th mat-header-cell *matHeaderCellDef>Paid to</th>
+              <td mat-cell *matCellDef="let r">{{ r.paidTo }}</td>
+            </ng-container>
+            <ng-container matColumnDef="amount">
+              <th mat-header-cell *matHeaderCellDef class="num">Due</th>
+              <td mat-cell *matCellDef="let r" class="num">{{ r.amount | pkr }}</td>
+            </ng-container>
+            <ng-container matColumnDef="paidAmount">
+              <th mat-header-cell *matHeaderCellDef class="num">Paid</th>
+              <td mat-cell *matCellDef="let r" class="num">{{ r.paidAmount | pkr }}</td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let r">
+                @if (r.short > 0) { <span class="status due">{{ r.short | pkr }} short</span> } @else { <span class="status ok">Paid</span> }
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="runningBalance">
+              <th mat-header-cell *matHeaderCellDef class="num">Balance</th>
+              <td mat-cell *matCellDef="let r" class="num">{{ r.runningBalance | pkr }}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="columns"></tr>
+            <tr mat-row *matRowDef="let row; columns: columns"></tr>
+          </table>
+        </div>
+      } @else {
+        <app-empty-state icon="payments" title="No payments yet" message="This household has no contributions on record." />
+      }
+    </div>
+  }
+</div>

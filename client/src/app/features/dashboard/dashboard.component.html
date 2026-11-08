@@ -1,0 +1,93 @@
+<div class="page">
+  <app-page-header title="Dashboard" [subtitle]="monthLabel">
+    <button mat-stroked-button (click)="load()" [disabled]="loading()">Refresh</button>
+    <a *appAdminOnly mat-flat-button routerLink="../funds" [queryParams]="{ add: 1 }">Record payment</a>
+  </app-page-header>
+
+  @if (loading()) { <mat-progress-bar mode="indeterminate" class="loader" /> }
+
+  <section class="kpis">
+    <app-stat-card label="Residents" [value]="'' + residents().length" [hint]="paidCount() + ' paid this month'" link="../residents" />
+    <app-stat-card label="Collected" [value]="collected() | pkr" [delta]="collectedDelta()" [hint]="prevLabel()" link="../funds" />
+    <app-stat-card label="Spent" [value]="spent() | pkr" [delta]="spentDelta()" [hint]="prevLabel()" link="../expenses" goodWhen="down" />
+    <app-stat-card label="Closing balance" [value]="(current()?.closingBalance ?? null) | pkr" [delta]="balanceDelta()" [hint]="current() ? prevLabel() : 'No ledger row yet'" link="../summary" />
+  </section>
+
+  <section class="grid">
+    <div class="panel chart">
+      <div class="panel-head">
+        <h2>Collected vs. spent</h2>
+        <span class="sub">Last {{ last12().length }} months</span>
+      </div>
+      <div class="panel-body">
+        @if (last12().length) {
+          <app-bar-chart [labels]="chartLabels()" [series]="chartSeries()" ariaLabel="Collected versus spent by month" />
+        } @else if (!loading()) {
+          <app-empty-state icon="insights" title="No ledger data yet" message="Monthly summaries appear here once the first month has been generated." />
+        }
+      </div>
+    </div>
+
+    <div class="panel collection">
+      <div class="panel-head">
+        <h2>{{ month | monthName }} collection</h2>
+        <span class="sub">{{ paidCount() }} of {{ residents().length }} households</span>
+      </div>
+      <div class="panel-body">
+        <div class="progress">
+          <div class="progress-figures">
+            <span class="big">{{ collectionPct() }}%</span>
+            <span class="muted">{{ collected() | pkr }} of {{ expectedDue() | pkr }} expected</span>
+          </div>
+          <div class="bar" role="progressbar" [attr.aria-valuenow]="collectionPct()" aria-valuemin="0" aria-valuemax="100">
+            <span [style.width.%]="collectionPct()"></span>
+          </div>
+          @if (shortfall()) { <p class="shortfall">{{ shortfall() | pkr }} short on partial payments</p> }
+        </div>
+
+        <h3>Not yet paid</h3>
+        @if (unpaid().length) {
+          <ul class="unpaid">
+            @for (r of unpaid().slice(0, 6); track r.id) {
+              <li>
+                <span class="cell-primary">{{ r.ownerName }}</span>
+                <span class="muted">House {{ r.houseNumber }}</span>
+                <a [href]="'tel:' + r.phoneNumber" class="call" [attr.aria-label]="'Call ' + r.ownerName"><mat-icon>call</mat-icon></a>
+              </li>
+            }
+          </ul>
+          @if (unpaid().length > 6) { <a routerLink="../residents" class="more">And {{ unpaid().length - 6 }} more</a> }
+        } @else if (!loading()) {
+          <p class="muted all-paid">Everyone has paid for {{ month | monthName }}.</p>
+        }
+      </div>
+    </div>
+
+    <div class="panel activity">
+      <div class="panel-head">
+        <h2>Activity this month</h2>
+        <span class="sub"><a routerLink="../funds">Payments</a> · <a routerLink="../expenses">Expenses</a></span>
+      </div>
+      @if (activity().length) {
+        <table mat-table [dataSource]="activity()" class="data-table">
+          <ng-container matColumnDef="day">
+            <th mat-header-cell *matHeaderCellDef class="day-col">Date</th>
+            <td mat-cell *matCellDef="let a" class="day-col muted">{{ a.day }} {{ month | monthName: true }}</td>
+          </ng-container>
+          <ng-container matColumnDef="what">
+            <th mat-header-cell *matHeaderCellDef>Description</th>
+            <td mat-cell *matCellDef="let a"><div class="cell-stack"><span class="cell-primary">{{ a.title }}</span><span class="cell-secondary">{{ a.kind === 'payment' ? 'Payment' : 'Expense' }} · {{ a.detail }}</span></div></td>
+          </ng-container>
+          <ng-container matColumnDef="amount">
+            <th mat-header-cell *matHeaderCellDef class="num">Amount</th>
+            <td mat-cell *matCellDef="let a" class="num" [class.in]="a.amount > 0" [class.out]="a.amount < 0">{{ a.amount > 0 ? '+' : '−' }}{{ (a.amount < 0 ? -a.amount : a.amount) | pkr }}</td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="activityColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: activityColumns"></tr>
+        </table>
+      } @else if (!loading()) {
+        <app-empty-state icon="receipt_long" title="Nothing recorded yet this month" />
+      }
+    </div>
+  </section>
+</div>
