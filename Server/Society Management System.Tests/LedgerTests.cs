@@ -16,7 +16,7 @@ public class LedgerTests : IClassFixture<ApiFactory>
     [Fact]
     public async Task Payments_and_expenses_update_the_month_and_roll_into_the_next()
     {
-        var admin = await _factory.ClientFor("treasurer@example.com");
+        var admin = await _factory.Admin();
         var resident = await (await admin.PostAsJsonAsync("/api/Resident", Fixtures.Resident())).Content.ReadFromJsonAsync<Resident>();
         var category = await (await admin.PostAsJsonAsync("/api/ExpenseCategory", new ExpenseCategory { Name = "Security" })).Content.ReadFromJsonAsync<ExpenseCategory>();
 
@@ -43,7 +43,7 @@ public class LedgerTests : IClassFixture<ApiFactory>
     [Fact]
     public async Task A_back_dated_payment_creates_the_missing_ledger_row()
     {
-        var admin = await _factory.ClientFor("backdated@example.com");
+        var admin = await _factory.Admin();
         var resident = await (await admin.PostAsJsonAsync("/api/Resident", Fixtures.Resident("Back Dated", "77"))).Content.ReadFromJsonAsync<Resident>();
 
         var response = await admin.PostAsJsonAsync("/api/MonthlyFund", Fixtures.Fund(resident!.Id, 6, 2029, 4000, 4000));
@@ -57,7 +57,7 @@ public class LedgerTests : IClassFixture<ApiFactory>
     [Fact]
     public async Task Resident_statement_totals_the_history()
     {
-        var admin = await _factory.ClientFor("statement@example.com");
+        var admin = await _factory.Admin();
         var resident = await (await admin.PostAsJsonAsync("/api/Resident", Fixtures.Resident("Statement Person", "88"))).Content.ReadFromJsonAsync<Resident>();
         (await admin.PostAsJsonAsync("/api/MonthlyFund", Fixtures.Fund(resident!.Id, 3, 2031, 4000, 4000))).EnsureSuccessStatusCode();
         (await admin.PostAsJsonAsync("/api/MonthlyFund", Fixtures.Fund(resident.Id, 4, 2031, 4000, 1000))).EnsureSuccessStatusCode();
@@ -74,7 +74,7 @@ public class LedgerTests : IClassFixture<ApiFactory>
     [Fact]
     public async Task Fund_search_pages_and_filters()
     {
-        var admin = await _factory.ClientFor("paging@example.com");
+        var admin = await _factory.Admin();
         var resident = await (await admin.PostAsJsonAsync("/api/Resident", Fixtures.Resident("Pager", "99"))).Content.ReadFromJsonAsync<Resident>();
         for (var m = 1; m <= 7; m++)
             (await admin.PostAsJsonAsync("/api/MonthlyFund", Fixtures.Fund(resident!.Id, m, 2032, 4000, 4000))).EnsureSuccessStatusCode();
@@ -91,7 +91,7 @@ public class LedgerTests : IClassFixture<ApiFactory>
     [Fact]
     public async Task Invalid_fund_is_rejected_with_field_errors()
     {
-        var admin = await _factory.ClientFor("validation@example.com");
+        var admin = await _factory.Admin();
 
         var response = await admin.PostAsJsonAsync("/api/MonthlyFund", new MonthlyFund { Month = 13, Year = 2030, DatePaid = 0, PaidTo = "", Amount = 0, ResidentId = 0 });
 
