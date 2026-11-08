@@ -119,6 +119,15 @@ dotnet test "Society Management System.Tests"
 
 Integration tests boot the real API with `WebApplicationFactory` against an in-memory SQLite database (Hangfire disabled via `Hangfire:Enabled=false`, provider via `Database:Provider=Sqlite`). They cover: first-user-is-admin, viewers are read-only, role changes, validation errors, the ledger roll-forward across months, back-dated entries creating their ledger row, the resident statement, and paging/filtering.
 
+## Engineering highlights
+
+- **Layered, interface-driven design** — `Controllers → Services → Repositories`, every dependency behind an interface and resolved by the built-in DI container; controllers never touch EF Core.
+- **Authorization, not just authentication** — ASP.NET Core Identity with Admin / Viewer roles; the role travels in the JWT and `[Authorize(Roles = …)]` guards every write.
+- **Scheduled domain logic** — a Hangfire recurring job opens each month's ledger row; the same logic self-heals when a back-dated entry arrives first.
+- **Contract-first errors** — data annotations on models and DTOs, RFC 7807 `ValidationProblemDetails` / `ProblemDetails` for every failure path.
+- **Designed to be tested** — the database provider and background server are configurable, so the real app boots on in-memory SQLite inside `WebApplicationFactory`; the tests exercise HTTP, auth, validation and the money rules end to end.
+- **Operational hygiene** — secrets via user-secrets / environment only, health endpoint, Docker Compose, CI with tests on every push.
+
 ## Engineering notes
 
 - **Secrets are never committed.** `appsettings.json` holds empty placeholders; real values come from user-secrets or the environment and the app fails fast at startup if they're missing.
