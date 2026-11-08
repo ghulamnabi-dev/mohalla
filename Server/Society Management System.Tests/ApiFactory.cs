@@ -17,21 +17,15 @@ namespace Society_Management_System.Tests;
 /// The database is seeded with one administrator (<see cref="AdminEmail"/>); every account the tests
 /// register afterwards is therefore a Viewer, which keeps the tests independent of execution order.
 /// </summary>
-public sealed class ApiFactory : WebApplicationFactory<Program>
+public class ApiFactory : WebApplicationFactory<Program>
 {
     // Keeping one open connection alive is what keeps an in-memory SQLite database alive.
     private readonly SqliteConnection _connection = new("DataSource=:memory:");
 
     public const string AdminEmail = "admin@example.com";
     public const string Password = "Str0ng#Password";
-    private readonly bool _seedAdmin;
-
-    public ApiFactory() : this(seedAdmin: true) { }
-
-    public ApiFactory(bool seedAdmin)
-    {
-        _seedAdmin = seedAdmin;
-    }
+    /// <summary>xUnit class fixtures need exactly one public constructor; <see cref="UnseededApiFactory"/> turns seeding off.</summary>
+    protected virtual bool SeedAdminOnStartup => true;
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -53,7 +47,7 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
 
             using var scope = services.BuildServiceProvider().CreateScope();
             scope.ServiceProvider.GetRequiredService<SMSContext>().Database.EnsureCreated();
-            if (_seedAdmin) SeedAdmin(scope.ServiceProvider).GetAwaiter().GetResult();
+            if (SeedAdminOnStartup) SeedAdmin(scope.ServiceProvider).GetAwaiter().GetResult();
         });
     }
 
@@ -107,6 +101,12 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
         base.Dispose(disposing);
         _connection.Dispose();
     }
+}
+
+/// <summary>An API over an empty database: exercises the "first account becomes Admin" rule.</summary>
+public sealed class UnseededApiFactory : ApiFactory
+{
+    protected override bool SeedAdminOnStartup => false;
 }
 
 internal static class ServiceCollectionExtensions

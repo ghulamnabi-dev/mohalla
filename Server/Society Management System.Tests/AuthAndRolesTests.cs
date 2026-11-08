@@ -30,7 +30,7 @@ public class AuthAndRolesTests : IClassFixture<ApiFactory>
     {
         // A fresh factory = a fresh database with only the seeded admin removed from the picture:
         // register through a brand-new, unseeded app to exercise the bootstrap rule.
-        await using var fresh = new ApiFactory(seedAdmin: false);
+        await using var fresh = new UnseededApiFactory();
         var first = await fresh.ClientFor("founder@example.com");
         var second = await fresh.ClientFor("member@example.com");
 
