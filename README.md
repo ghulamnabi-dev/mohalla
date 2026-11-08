@@ -27,7 +27,9 @@
 - **Contributions** — year/month filters, running totals, paid/outstanding chips; record a payment by picking the resident and a date, outstanding computed live.
 - **Expenses** — category filter, inline category management (add / rename / delete persisted to the API).
 - **Monthly ledger** — opening, collected, spent, net and closing per month; trend chart; CSV export.
-- **Auth** — JWT stored client-side, route guards, bearer interceptor, automatic sign-out on 401, session-expiry check from the token's `exp`.
+- **Resident statement** — a resident's full payment history with running balance, totals, and a print stylesheet; record a payment straight from it.
+- **Roles** — Admin / Viewer from the JWT role claim: viewers get a read-only UI (no add/edit/delete, no actions column), admins manage accounts on the Users page. Server validation errors land on the matching form fields.
+- **Auth** — JWT stored client-side, route guards (auth, guest, admin), bearer interceptor, automatic sign-out on 401, session-expiry check from the token's `exp`.
 - **UI** — a quiet admin aesthetic: one accent, flat surfaces, dense tables, tabular figures; light/dark theme persisted with no flash on load; responsive to 375 px; self-hosted Inter + Material Icons; reduced-motion support.
 
 ## Stack & conventions
@@ -39,7 +41,7 @@
 | Forms | typed reactive forms (`nonNullable`), cross-field validators |
 | HTTP | thin `CrudApi<T>` base per resource, functional interceptor |
 | Charts | a 60-line SVG bar chart component — no charting dependency |
-| Quality | TypeScript `strict`, `strictTemplates`, Prettier, EditorConfig, GitHub Actions (test + production build) |
+| Quality | TypeScript `strict`, `strictTemplates`, 94 unit tests (services, guards, interceptor, chart, dashboard and funds maths, statement balance), Prettier, EditorConfig, GitHub Actions |
 
 ```
 src/app
@@ -73,8 +75,9 @@ npm run build:prod   # outputs dist/mohalla-web/browser — deploy as static fil
 
 ## Roadmap
 
-- [ ] Resident statement page (one resident's payment history + balance)
-- [ ] Role-based UI once the API exposes roles
+- [x] Resident statement page
+- [x] Role-based UI (Admin / Viewer)
+- [ ] Server-side paging for the contributions and expenses tables
 - [ ] E2E smoke tests with Playwright
 - [ ] Deploy a demo with seeded data
 
