@@ -44,9 +44,10 @@ namespace Society_Management_System.Services
 
             await EnsureRolesExist();
 
-            // The first account on a fresh database administers the society; everyone after that starts read-only.
-            var isFirstUser = await _userManager.Users.CountAsync() == 1;
-            await _userManager.AddToRoleAsync(user, isFirstUser ? Roles.Admin : Roles.Viewer);
+            // Whoever arrives while the society has no administrator becomes one (fresh database, or a
+            // database created before roles existed); everyone after that starts read-only.
+            var hasAdmin = (await _userManager.GetUsersInRoleAsync(Roles.Admin)).Count > 0;
+            await _userManager.AddToRoleAsync(user, hasAdmin ? Roles.Viewer : Roles.Admin);
 
             return (true, Array.Empty<string>());
         }
@@ -59,6 +60,7 @@ namespace Society_Management_System.Services
                 return null;
             }
 
+            await EnsureSomeoneIsAdmin(user);
             var role = await RoleOf(user);
             return new AuthResponseDto
             {
@@ -100,6 +102,16 @@ namespace Society_Management_System.Services
             await _userManager.RemoveFromRolesAsync(user, current);
             var result = await _userManager.AddToRoleAsync(user, role);
             return result.Succeeded ? (true, null) : (false, string.Join(" ", result.Errors.Select(e => e.Description)));
+        }
+
+        /// <summary>Upgrade path: accounts created before roles existed have none. The first to sign in takes Admin.</summary>
+        private async Task EnsureSomeoneIsAdmin(User user)
+        {
+            await EnsureRolesExist();
+            if ((await _userManager.GetUsersInRoleAsync(Roles.Admin)).Count == 0)
+            {
+                await _userManager.AddToRoleAsync(user, Roles.Admin);
+            }
         }
 
         private async Task<string> RoleOf(User user)

@@ -16,7 +16,7 @@ The Angular 19 client lives in **[gn-4200/SMS](https://github.com/gn-4200/SMS)**
 - **Monthly funds** — record each resident's contribution with amount paid, outstanding balance and date; query by month or by resident.
 - **Expenses** — log spending against user-defined categories; query by month and year.
 - **Monthly summary (ledger)** — opening balance, total collected, total spent, closing balance. A Hangfire recurring job creates the row for a new month on the 1st; the service computes totals and rolls the previous month's closing balance into the new opening balance (including across the year boundary).
-- **Auth & roles** — ASP.NET Core Identity users, JWT bearer tokens (8-hour expiry) carrying a role claim. Two roles: **Admin** (full access) and **Viewer** (read-only). The first account registered on a database becomes Admin; admins promote or demote others from the Users page. Every data endpoint requires a token; every write requires Admin.
+- **Auth & roles** — ASP.NET Core Identity users, JWT bearer tokens (8-hour expiry) carrying a role claim. Two roles: **Admin** (full access) and **Viewer** (read-only). The first account to register or sign in while no administrator exists becomes Admin (this also upgrades databases created before roles existed); admins promote or demote others from the Users page. Every data endpoint requires a token; every write requires Admin.
 - **Reporting** — paged, filterable, sortable `search` endpoints for contributions and expenses (joined with resident/category names), and a per-resident statement with totals.
 - **Validation** — data annotations on every model and DTO; failures return RFC 7807 `ValidationProblemDetails` with per-field errors; unhandled errors return `ProblemDetails`.
 
