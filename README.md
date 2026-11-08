@@ -10,6 +10,8 @@
 
 The Angular 19 client lives in **[gn-4200/SMS](https://github.com/gn-4200/SMS)** (`mohalla-web`).
 
+<p align="center"><img src="docs/cover.png" alt="Mohalla client: dashboard and resident statement" width="100%"></p>
+
 ## What it does
 
 - **Residents** — register households, look one up by house number before accepting a payment (`POST /api/resident/checkResident`).
