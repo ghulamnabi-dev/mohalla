@@ -9,16 +9,34 @@
 **Mohalla** (Urdu: *neighbourhood*) keeps a housing society's books: residents, monthly contributions, categorised expenses and an auto-balancing monthly ledger. This is the Angular client; the ASP.NET Core 9 API lives in **[gn-4200/SocietyManagmentSystem](https://github.com/gn-4200/SocietyManagmentSystem)**.
 
 <p align="center">
-  <img src="docs/screenshots/02-dashboard.png" alt="Dashboard — KPIs, 12-month collected vs. spent chart, recent activity" width="100%">
+  <img src="docs/screenshots/cover.png" alt="Mohalla — dashboard in light mode and a resident statement in dark mode" width="100%">
 </p>
 
-| Contributions | Monthly ledger |
-|---|---|
-| ![Contributions table with filters and paid/outstanding status](docs/screenshots/04-funds.png) | ![Ledger with trend chart and net column](docs/screenshots/06-ledger.png) |
+<p align="center">
+  <img src="docs/screenshots/tour.gif" alt="30-second tour: sign in, dashboard, resident statement, record a payment, ledger, dark mode" width="100%">
+</p>
 
-| Sign in | Dark mode | Mobile |
-|---|---|---|
-| ![Sign in](docs/screenshots/01-login.png) | ![Dashboard, dark theme](docs/screenshots/08-dashboard-dark.png) | <img src="docs/screenshots/09-mobile.png" alt="Dashboard on a phone" width="220"> |
+<details>
+<summary><strong>More screens</strong> — statement, contributions, expenses, users, mobile</summary>
+<br>
+
+| Resident statement | Contributions |
+|---|---|
+| ![Resident statement with running balance](docs/screenshots/03-statement.png) | ![Contributions with filters and shortfall status](docs/screenshots/04-contributions.png) |
+
+| Record a payment | Expenses |
+|---|---|
+| ![Record payment dialog with live outstanding amount](docs/screenshots/05-record-payment.png) | ![Expenses by category](docs/screenshots/06-expenses.png) |
+
+| Monthly ledger (dark) | Users & roles |
+|---|---|
+| ![Ledger with trend chart](docs/screenshots/07-ledger-dark.png) | ![Users page with inline role change](docs/screenshots/09-users.png) |
+
+| Sign in | Mobile |
+|---|---|
+| ![Sign in](docs/screenshots/01-login.png) | <img src="docs/screenshots/10-mobile.png" alt="Dashboard on a phone" width="260"> |
+
+</details>
 
 ## Features
 
