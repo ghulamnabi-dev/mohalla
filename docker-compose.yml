@@ -1,6 +1,7 @@
-# One-command local stack: SQL Server + API.
+# One-command local stack: SQL Server + API + web client.
+#   cp .env.example .env   (set SA_PASSWORD and a 32+ char JWT_SECRET)
 #   docker compose up --build
-# Then open http://localhost:5091 for Swagger.
+# Web:  http://localhost:4200     API / Swagger: http://localhost:5091
 services:
   db:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -19,7 +20,7 @@ services:
 
   api:
     build:
-      context: ./Server/Society Management System
+      context: ./server/Society Management System
     depends_on:
       db:
         condition: service_healthy
@@ -32,6 +33,14 @@ services:
       Cors__AllowedOrigins__0: http://localhost:4200
     ports:
       - "5091:8080"
+
+  web:
+    build:
+      context: ./client
+    depends_on:
+      - api
+    ports:
+      - "4200:80"
 
 volumes:
   mssql-data:

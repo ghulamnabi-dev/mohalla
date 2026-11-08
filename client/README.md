@@ -1,12 +1,12 @@
 # Mohalla — Web client
 
-[![CI](https://github.com/gn-4200/mohalla-web/actions/workflows/ci.yml/badge.svg)](https://github.com/gn-4200/mohalla-web/actions/workflows/ci.yml)
+[![CI](https://github.com/gn-4200/mohalla/actions/workflows/ci.yml/badge.svg)](https://github.com/gn-4200/mohalla/actions/workflows/ci.yml)
 ![Angular 19](https://img.shields.io/badge/Angular-19-DD0031?logo=angular&logoColor=white)
 ![Angular Material 3](https://img.shields.io/badge/Material-3-757575?logo=materialdesign&logoColor=white)
 ![TypeScript strict](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 
-**Mohalla** (Urdu: *neighbourhood*) keeps a housing society's books: residents, monthly contributions, categorised expenses and an auto-balancing monthly ledger. This is the Angular client; the ASP.NET Core 9 API lives in **[gn-4200/SocietyManagmentSystem](https://github.com/gn-4200/mohalla-api)**.
+**Mohalla** (Urdu: *neighbourhood*) keeps a housing society's books: residents, monthly contributions, categorised expenses and an auto-balancing monthly ledger. This folder is the Angular client; the ASP.NET Core 9 API is in [`../server`](../server/README.md), and the [root README](../README.md) has the one-command Docker stack.
 
 <p align="center">
   <img src="docs/screenshots/cover.png" alt="Mohalla — dashboard in light mode and a resident statement in dark mode" width="100%">
@@ -87,9 +87,9 @@ npm ci
 npm start            # http://localhost:4200 — expects the API at http://localhost:5091
 ```
 
-Point the client at a different API by editing `src/environments/environment.development.ts` (dev) or `environment.ts` (production builds).
+The dev build calls the API at `http://localhost:5091/api` (`src/environments/environment.development.ts`). Production builds call `/api` on the same origin and expect the host to proxy it to the API — the `Dockerfile` + `nginx.conf` here do exactly that, and `docker compose up` at the repo root runs the whole stack.
 
-Start the API with Docker from the server repo: `docker compose up --build` (see its README), or run it with the .NET SDK.
+Start the API from `../server` (see its README), or `docker compose up db api` from the repo root.
 
 ```bash
 npm run seed         # demo data: 13 residents, 12 months of payments/expenses, ledger rows; creates demo@mohalla.local
@@ -97,7 +97,7 @@ npm run seed         # demo data: 13 residents, 12 months of payments/expenses, 
 
 ```bash
 npm test             # Karma + Jasmine, headless Chrome
-npm run build:prod   # outputs dist/mohalla-web/browser — deploy as static files (Vercel, Netlify, GitHub Pages, nginx)
+npm run build:prod   # outputs dist/mohalla-web/browser — static files; put them behind any host that proxies /api to the API
 ```
 
 ## Roadmap

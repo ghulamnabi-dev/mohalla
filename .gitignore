@@ -1,31 +1,36 @@
-# Build output
+# --- .NET (server/) ---
 bin/
 obj/
 out/
 publish/
-
-# IDE / user state
+TestResults/
+*.trx
 .vs/
-.vscode/
 *.user
 *.suo
-*.swp
+
+# --- Node / Angular (client/) ---
+node_modules/
+client/dist/
+client/.angular/
+client/out-tsc/
+npm-debug.log*
+yarn-error.log
+
+# --- IDE / OS ---
 .idea/
-
-# Secrets & local config
-appsettings.*.local.json
-secrets.json
-*.env
-.env*
-
-# Test results
-TestResults/
-coverage/
-*.trx
-
-# OS
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.swp
 .DS_Store
 Thumbs.db
 
-# keep the template
+# --- Secrets & local config ---
+.env
+.env.*
 !.env.example
+appsettings.*.local.json
+secrets.json

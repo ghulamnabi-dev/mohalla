@@ -9,40 +9,65 @@ permissions:
   contents: read
 
 jobs:
-  build-test:
-    name: Build & test (.NET 9)
+  server:
+    name: API — build & test (.NET 9)
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: Server
+        working-directory: server
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
-
       - name: Restore
         run: dotnet restore "Society Management System/Society Management System.sln"
-
       - name: Build (Release)
         run: dotnet build "Society Management System/Society Management System.sln" --no-restore -c Release
-
       - name: Integration tests (SQLite in-memory)
         run: dotnet test "Society Management System.Tests/Society Management System.Tests.csproj" --no-build -c Release --logger "trx;LogFileName=results.trx"
-
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-results
-          path: Server/Society Management System.Tests/TestResults
+          name: api-test-results
+          path: server/Society Management System.Tests/TestResults
           retention-days: 7
-
       - name: Publish API
         run: dotnet publish "Society Management System/Society Management System.csproj" --no-build -c Release -o ../publish
-
       - uses: actions/upload-artifact@v4
         with:
           name: api
           path: publish
           retention-days: 7
+
+  client:
+    name: Web — test & build (Angular 19)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+      - run: npm ci
+      - name: Unit tests
+        run: npm test
+      - name: Production build
+        run: npm run build:prod
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web
+          path: client/dist/mohalla-web/browser
+          retention-days: 7
+
+  docker:
+    name: Docker images build
+    runs-on: ubuntu-latest
+    needs: [server, client]
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose build
