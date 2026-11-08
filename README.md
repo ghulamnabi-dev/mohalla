@@ -1,6 +1,6 @@
 # Mohalla — API
 
-[![CI](https://github.com/gn-4200/SocietyManagmentSystem/actions/workflows/ci.yml/badge.svg)](https://github.com/gn-4200/SocietyManagmentSystem/actions/workflows/ci.yml)
+[![CI](https://github.com/gn-4200/mohalla-api/actions/workflows/ci.yml/badge.svg)](https://github.com/gn-4200/mohalla-api/actions/workflows/ci.yml)
 ![.NET 9](https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet&logoColor=white)
 ![EF Core](https://img.shields.io/badge/EF%20Core-9.0-512BD4)
 ![SQL Server](https://img.shields.io/badge/SQL%20Server-2022-CC2927?logo=microsoftsqlserver&logoColor=white)
@@ -8,7 +8,7 @@
 
 **Mohalla** (Urdu: *neighbourhood*) keeps a housing society's books. This is the REST API: residents, monthly contributions, categorised expenses, and a month-by-month ledger that is generated automatically and carries the closing balance forward.
 
-The Angular 19 client lives in **[gn-4200/SMS](https://github.com/gn-4200/SMS)** (`mohalla-web`).
+The Angular 19 client lives in **[gn-4200/SMS](https://github.com/gn-4200/mohalla-web)** (`mohalla-web`).
 
 <p align="center"><img src="docs/cover.png" alt="Mohalla client: dashboard and resident statement" width="100%"></p>
 
@@ -97,7 +97,7 @@ dotnet ef database update      # apply migrations
 dotnet run                     # http://localhost:5091
 ```
 
-Then start the client: `git clone https://github.com/gn-4200/SMS && cd SMS && npm i && ng serve`.
+Then start the client: `git clone https://github.com/gn-4200/mohalla-web && cd SMS && npm i && ng serve`.
 
 ### Configuration
 
