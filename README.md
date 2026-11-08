@@ -1,12 +1,12 @@
 # Mohalla — Web client
 
-[![CI](https://github.com/gn-4200/SMS/actions/workflows/ci.yml/badge.svg)](https://github.com/gn-4200/SMS/actions/workflows/ci.yml)
+[![CI](https://github.com/gn-4200/mohalla-web/actions/workflows/ci.yml/badge.svg)](https://github.com/gn-4200/mohalla-web/actions/workflows/ci.yml)
 ![Angular 19](https://img.shields.io/badge/Angular-19-DD0031?logo=angular&logoColor=white)
 ![Angular Material 3](https://img.shields.io/badge/Material-3-757575?logo=materialdesign&logoColor=white)
 ![TypeScript strict](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 
-**Mohalla** (Urdu: *neighbourhood*) keeps a housing society's books: residents, monthly contributions, categorised expenses and an auto-balancing monthly ledger. This is the Angular client; the ASP.NET Core 9 API lives in **[gn-4200/SocietyManagmentSystem](https://github.com/gn-4200/SocietyManagmentSystem)**.
+**Mohalla** (Urdu: *neighbourhood*) keeps a housing society's books: residents, monthly contributions, categorised expenses and an auto-balancing monthly ledger. This is the Angular client; the ASP.NET Core 9 API lives in **[gn-4200/SocietyManagmentSystem](https://github.com/gn-4200/mohalla-api)**.
 
 <p align="center">
   <img src="docs/screenshots/cover.png" alt="Mohalla — dashboard in light mode and a resident statement in dark mode" width="100%">
