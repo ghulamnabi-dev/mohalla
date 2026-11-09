@@ -1,6 +1,6 @@
 # Mohalla — Web client
 
-[![CI](https://github.com/gn-4200/mohalla/actions/workflows/ci.yml/badge.svg)](https://github.com/gn-4200/mohalla/actions/workflows/ci.yml)
+[![CI](https://github.com/ghulamnabi-dev/mohalla/actions/workflows/ci.yml/badge.svg)](https://github.com/ghulamnabi-dev/mohalla/actions/workflows/ci.yml)
 ![Angular 19](https://img.shields.io/badge/Angular-19-DD0031?logo=angular&logoColor=white)
 ![Angular Material 3](https://img.shields.io/badge/Material-3-757575?logo=materialdesign&logoColor=white)
 ![TypeScript strict](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)

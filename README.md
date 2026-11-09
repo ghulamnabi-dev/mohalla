@@ -1,6 +1,6 @@
 # Mohalla
 
-[![CI](https://github.com/gn-4200/mohalla/actions/workflows/ci.yml/badge.svg)](https://github.com/gn-4200/mohalla/actions/workflows/ci.yml)
+[![CI](https://github.com/ghulamnabi-dev/mohalla/actions/workflows/ci.yml/badge.svg)](https://github.com/ghulamnabi-dev/mohalla/actions/workflows/ci.yml)
 ![.NET 9](https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet&logoColor=white)
 ![Angular 19](https://img.shields.io/badge/Angular-19-DD0031?logo=angular&logoColor=white)
 ![SQL Server](https://img.shields.io/badge/SQL%20Server-2022-CC2927?logo=microsoftsqlserver&logoColor=white)

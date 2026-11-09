@@ -1,6 +1,6 @@
 # Mohalla — API
 
-[![CI](https://github.com/gn-4200/mohalla/actions/workflows/ci.yml/badge.svg)](https://github.com/gn-4200/mohalla/actions/workflows/ci.yml)
+[![CI](https://github.com/ghulamnabi-dev/mohalla/actions/workflows/ci.yml/badge.svg)](https://github.com/ghulamnabi-dev/mohalla/actions/workflows/ci.yml)
 ![.NET 9](https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet&logoColor=white)
 ![EF Core](https://img.shields.io/badge/EF%20Core-9.0-512BD4)
 ![SQL Server](https://img.shields.io/badge/SQL%20Server-2022-CC2927?logo=microsoftsqlserver&logoColor=white)
