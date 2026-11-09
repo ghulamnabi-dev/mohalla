@@ -10,7 +10,7 @@
 **Mohalla** (Urdu: *neighbourhood*) keeps a housing society's books: residents, monthly contributions, categorised expenses, and a month-by-month ledger that is generated automatically and carries the closing balance forward. Admins record and manage; viewers get a read-only view of the same figures.
 
 <p align="center">
-  <img src="client/docs/screenshots/cover.png" alt="Mohalla — dashboard in light mode and a resident statement in dark mode" width="100%">
+  <img src="client/docs/screenshots/cover.png" alt="Mohalla: a resident's statement with every short month and the running balance, and the dashboard in dark mode behind it" width="100%">
 </p>
 
 <p align="center">
